@@ -3,6 +3,9 @@ concurrencytest
 
 Python testtools extension for running unittest suites concurrently.
 
+requires:
+ * testtools (`pip install testtools`)
+
 ----
 
 Example:

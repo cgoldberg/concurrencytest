@@ -35,12 +35,12 @@ from testtools import iterate_tests
 
 def fork_for_tests(concurrency_num=1):
     """Implementation of `make_tests` used to construct a `ConcurrentTestSuite`.
-    
+
     :param concurrency_num: number of processes to use.
     """
     def do_fork(suite):
         """Take suite and start up multiple runners by forking (Unix only).
-        
+
         :param suite: TestSuite object.
 
         :return: An iterable of TestCase-like objects which can each have
@@ -70,10 +70,11 @@ def fork_for_tests(concurrency_num=1):
                     )
                     process_suite.run(subunit_result)
                 except:
-                    # Try and report traceback on stream, but exit with error even
-                    # if stream couldn't be created or something else goes wrong.
-                    # The traceback is formatted to a string and written in one go
-                    # to avoid interleaving lines from multiple failing children.
+                    # Try and report traceback on stream, but exit with error
+                    # even if stream couldn't be created or something else
+                    # goes wrong.  The traceback is formatted to a string and
+                    # written in one go to avoid interleaving lines from
+                    # multiple failing children.
                     try:
                         stream.write(traceback.format_exc())
                     finally:
@@ -108,12 +109,16 @@ if __name__ == '__main__':
 
     class SampleTestCase(unittest.TestCase):
         """Dummy tests that sleep for demo."""
+
         def test_me_1(self):
             time.sleep(0.5)
+
         def test_me_2(self):
             time.sleep(0.5)
+
         def test_me_3(self):
             time.sleep(0.5)
+
         def test_me_4(self):
             time.sleep(0.5)
 

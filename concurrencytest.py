@@ -34,7 +34,7 @@ from testtools import iterate_tests
 
 
 def fork_for_tests(concurrency_num=1):
-    """Implementation of `make_tests` used to construct a `ConcurrentTestSuite`.
+    """Implementation of `make_tests` used to construct `ConcurrentTestSuite`.
 
     :param concurrency_num: number of processes to use.
     """

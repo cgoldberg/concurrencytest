@@ -13,8 +13,8 @@ Example:
 ```python
 import time
 import unittest
-from testtools import ConcurrentTestSuite
 
+from testtools import ConcurrentTestSuite
 from concurrencytest import fork_for_tests
 
 

@@ -21,17 +21,17 @@ class BothPass(unittest.TestCase):
         self.assertTrue(True)
 
 
-class OneFail(unittest.TestCase):
-    def test_fail(self):
-        self.assertTrue(False)
+class OneError(unittest.TestCase):
+    def test_error(self):
+        raise Exception('ouch')
 
     def test_pass(self):
         self.assertTrue(True)
 
 
-class OneError(unittest.TestCase):
-    def test_error(self):
-        raise Exception('ouch')
+class OneFail(unittest.TestCase):
+    def test_fail(self):
+        self.assertTrue(False)
 
     def test_pass(self):
         self.assertTrue(True)

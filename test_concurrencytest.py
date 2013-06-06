@@ -6,8 +6,8 @@
 
 import unittest
 
-from testtools import ConcurrentTestSuite, try_imports
-from concurrencytest import fork_for_tests
+from testtools import ConcurrentTestSuite, try_imports, iterate_tests
+from concurrencytest import fork_for_tests, partition_tests
 
 
 StringIO = try_imports(['StringIO.StringIO', 'io.StringIO'])
@@ -46,7 +46,7 @@ class OneSkip(unittest.TestCase):
         self.assertTrue(True)
 
 
-class ForkedTestCase(unittest.TestCase):
+class ForkingWorkersTestCase(unittest.TestCase):
 
     def run_tests(self, suite):
         runner = unittest.TextTestRunner(stream=StringIO())
@@ -86,10 +86,42 @@ class ForkedTestCase(unittest.TestCase):
         self.assertEqual(len(result.skipped), 1)
 
 
+class PartitionTestCase(unittest.TestCase):
+
+    def setUp(self):
+        suite1 = unittest.TestLoader().loadTestsFromTestCase(BothPass)
+        suite2 = unittest.TestLoader().loadTestsFromTestCase(OneError)
+        suite3 = unittest.TestLoader().loadTestsFromTestCase(OneFail)
+        suite4 = unittest.TestLoader().loadTestsFromTestCase(OneSkip)
+        self.suite = unittest.TestSuite([suite1, suite2, suite3, suite4])
+
+    def test_num_tests(self):
+        num_tests = len(list(iterate_tests(self.suite)))
+        self.assertEqual(num_tests, 8)
+
+    def test_partition_even_groups(self):
+        parted_tests = partition_tests(self.suite, 4)
+        self.assertEqual(len(parted_tests), 4)
+        self.assertEqual(len(parted_tests[0]), 2)
+        self.assertEqual(len(parted_tests[1]), 2)
+
+    def test_partition_one_in_each(self):
+        parted_tests = partition_tests(self.suite, 8)
+        self.assertEqual(len(parted_tests), 8)
+        self.assertEqual(len(parted_tests[0]), 1)
+
+    def test_partition_all_in_one(self):
+        parted_tests = partition_tests(self.suite, 1)
+        self.assertEqual(len(parted_tests), 1)
+        self.assertEqual(len(parted_tests[0]), 8)
+
+
 def main():
     runner = unittest.TextTestRunner(verbosity=2)
-    suite = unittest.TestLoader().loadTestsFromTestCase(ForkedTestCase)
-    result = runner.run(suite)
+    suite1 = unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase)
+    suite2 = unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase)
+    alltests = unittest.TestSuite([suite1, suite2])
+    result = runner.run(alltests)
     return len(result.errors) + len(result.failures)
 
 

@@ -4,7 +4,11 @@
 #   License: GPLv2+
 
 
-from cStringIO import StringIO
+try:
+    from StringIO import StringIO  # Py27
+except ImportError:
+    from io import StringIO  # Py3
+
 import unittest
 
 from testtools import ConcurrentTestSuite
@@ -84,7 +88,14 @@ class ForkedTestCase(unittest.TestCase):
         self.assertIn('OK (skipped=1)', out.getvalue())
 
 
-if __name__ == '__main__':
+def main():
     runner = unittest.TextTestRunner(verbosity=2)
     suite = unittest.TestLoader().loadTestsFromTestCase(ForkedTestCase)
-    runner.run(suite)
+    result = runner.run(suite)
+    return len(result.errors) + len(result.failures)
+
+
+if __name__ == '__main__':
+    import sys
+    sys.exit(main())
+

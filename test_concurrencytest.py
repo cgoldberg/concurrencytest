@@ -64,18 +64,18 @@ class ForkedTestCase(unittest.TestCase):
         self.assertEqual(result.failures, [])
         self.assertEqual(result.skipped, [])
 
-    def test_run_with_fail(self):
-        suite = unittest.TestLoader().loadTestsFromTestCase(OneFail)
-        result = self.run_tests(suite)
-        self.assertEqual(len(result.errors), 0)
-        self.assertEqual(len(result.failures), 1)
-        self.assertEqual(len(result.skipped), 0)
-
     def test_run_with_error(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(OneError)
         result = self.run_tests(suite)
         self.assertEqual(len(result.errors), 1)
         self.assertEqual(len(result.failures), 0)
+        self.assertEqual(len(result.skipped), 0)
+
+    def test_run_with_fail(self):
+        suite = unittest.TestLoader().loadTestsFromTestCase(OneFail)
+        result = self.run_tests(suite)
+        self.assertEqual(len(result.errors), 0)
+        self.assertEqual(len(result.failures), 1)
         self.assertEqual(len(result.skipped), 0)
 
     def test_run_with_skip(self):

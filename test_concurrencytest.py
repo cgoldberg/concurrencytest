@@ -4,15 +4,13 @@
 #   License: GPLv2+
 
 
-try:
-    from StringIO import StringIO  # Py27
-except ImportError:
-    from io import StringIO  # Py3
-
 import unittest
 
-from testtools import ConcurrentTestSuite
+from testtools import ConcurrentTestSuite, try_imports
 from concurrencytest import fork_for_tests
+
+
+StringIO = try_imports(['StringIO.StringIO', 'io.StringIO'])
 
 
 class BothPass(unittest.TestCase):

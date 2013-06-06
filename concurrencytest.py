@@ -25,17 +25,12 @@ import os
 import sys
 import traceback
 import unittest
-
-try:
-    from itertools import izip  # Py2
-except ImportError:
-    izip = zip  # Py3
 from itertools import cycle
 
 from subunit import ProtocolTestCase, TestProtocolClient
 from subunit.test_results import AutoTimingTestResultDecorator
 
-from testtools import iterate_tests
+from testtools import iterate_tests, try_import
 
 
 def fork_for_tests(concurrency_num=1):
@@ -103,7 +98,7 @@ def partition_tests(suite, count):
     # than the fastest.
     partitions = [list() for i in range(count)]
     tests = iterate_tests(suite)
-    for partition, test in izip(cycle(partitions), tests):
+    for partition, test in zip(cycle(partitions), tests):
         partition.append(test)
     return partitions
 

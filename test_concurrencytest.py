@@ -51,41 +51,34 @@ class OneSkip(unittest.TestCase):
 class ForkedTestCase(unittest.TestCase):
 
     def run_tests(self, suite):
-        out = StringIO()
-        runner = unittest.TextTestRunner(stream=out)
+        runner = unittest.TextTestRunner(stream=StringIO())
         # Run tests across 2 processes
         concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(2))
         result = runner.run(concurrent_suite)
-        return result, out
+        return result
 
     def test_run_pass(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(BothPass)
-        result, out = self.run_tests(suite)
+        result = self.run_tests(suite)
         self.assertEqual(result.testsRun, suite.countTestCases())
         self.assertEqual(result.errors, [])
         self.assertEqual(result.failures, [])
         self.assertEqual(result.skipped, [])
-        self.assertIn('Ran 2 tests', out.getvalue())
-        self.assertIn('OK', out.getvalue())
 
     def test_run_with_fail(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(OneFail)
-        result, out = self.run_tests(suite)
+        result = self.run_tests(suite)
         self.assertEqual(len(result.failures), 1)
-        self.assertIn('FAILED (failures=1)', out.getvalue())
 
     def test_run_with_error(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(OneError)
-        result, out = self.run_tests(suite)
+        result = self.run_tests(suite)
         self.assertEqual(len(result.errors), 1)
-        self.assertIn('Exception: ouch', out.getvalue())
-        self.assertIn('FAILED (errors=1)', out.getvalue())
 
     def test_run_with_skip(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(OneSkip)
-        result, out = self.run_tests(suite)
+        result = self.run_tests(suite)
         self.assertEqual(len(result.skipped), 1)
-        self.assertIn('OK (skipped=1)', out.getvalue())
 
 
 def main():

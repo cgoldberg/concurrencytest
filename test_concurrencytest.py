@@ -53,9 +53,10 @@ class ForkedTestCase(unittest.TestCase):
         # Run tests across 2 processes
         concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(2))
         result = runner.run(concurrent_suite)
+        self.assertEqual(result.testsRun, suite.countTestCases())
         return result
 
-    def test_run_pass(self):
+    def test_run_all_pass(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(BothPass)
         result = self.run_tests(suite)
         self.assertEqual(result.testsRun, suite.countTestCases())
@@ -66,16 +67,22 @@ class ForkedTestCase(unittest.TestCase):
     def test_run_with_fail(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(OneFail)
         result = self.run_tests(suite)
+        self.assertEqual(len(result.errors), 0)
         self.assertEqual(len(result.failures), 1)
+        self.assertEqual(len(result.skipped), 0)
 
     def test_run_with_error(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(OneError)
         result = self.run_tests(suite)
         self.assertEqual(len(result.errors), 1)
+        self.assertEqual(len(result.failures), 0)
+        self.assertEqual(len(result.skipped), 0)
 
     def test_run_with_skip(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(OneSkip)
         result = self.run_tests(suite)
+        self.assertEqual(len(result.errors), 0)
+        self.assertEqual(len(result.failures), 0)
         self.assertEqual(len(result.skipped), 1)
 
 

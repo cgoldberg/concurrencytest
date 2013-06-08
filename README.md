@@ -17,8 +17,7 @@ Example:
 import time
 import unittest
 
-from testtools import ConcurrentTestSuite
-from concurrencytest import fork_for_tests
+from concurrencytest import ConcurrentTestSuite, fork_for_tests
 
 
 class SampleTestCase(unittest.TestCase):

@@ -6,8 +6,8 @@
 
 import unittest
 
-from testtools import ConcurrentTestSuite, try_imports, iterate_tests
-from concurrencytest import fork_for_tests, partition_tests
+from testtools import try_imports, iterate_tests
+from concurrencytest import ConcurrentTestSuite, fork_for_tests, partition_tests
 
 
 StringIO = try_imports(['StringIO.StringIO', 'io.StringIO'])
@@ -90,11 +90,12 @@ class ForkingWorkersTestCase(unittest.TestCase):
 class PartitionTestCase(unittest.TestCase):
 
     def setUp(self):
-        suite1 = unittest.TestLoader().loadTestsFromTestCase(BothPass)
-        suite2 = unittest.TestLoader().loadTestsFromTestCase(OneError)
-        suite3 = unittest.TestLoader().loadTestsFromTestCase(OneFail)
-        suite4 = unittest.TestLoader().loadTestsFromTestCase(OneSkip)
-        self.suite = unittest.TestSuite([suite1, suite2, suite3, suite4])
+        self.suite = unittest.TestSuite([
+            unittest.TestLoader().loadTestsFromTestCase(BothPass),
+            unittest.TestLoader().loadTestsFromTestCase(OneError),
+            unittest.TestLoader().loadTestsFromTestCase(OneFail),
+            unittest.TestLoader().loadTestsFromTestCase(OneSkip),
+        ])
 
     def test_num_tests(self):
         num_tests = len(list(iterate_tests(self.suite)))
@@ -119,10 +120,11 @@ class PartitionTestCase(unittest.TestCase):
 
 def main():
     runner = unittest.TextTestRunner()
-    suite1 = unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase)
-    suite2 = unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase)
-    alltests = unittest.TestSuite([suite1, suite2])
-    concurrent_suite = ConcurrentTestSuite(alltests, fork_for_tests(4))
+    suite = unittest.TestSuite((
+        unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase),
+    ))
+    concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(2))
     result = runner.run(concurrent_suite)
     return len(result.errors) + len(result.failures)
 

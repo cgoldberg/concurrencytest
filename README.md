@@ -1,7 +1,7 @@
 concurrencytest
 ===============
 
-![testing goat](https://raw.github.com/cgoldberg/concurrencytest/master/kid_goat.png "kid goat")
+![testing goats](https://raw.github.com/cgoldberg/concurrencytest/master/testing-goats.png "testing goats")
 
 Python testtools extension for running unittest suites concurrently.
 

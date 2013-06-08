@@ -59,6 +59,7 @@ class ForkingWorkersTestCase(unittest.TestCase):
     def test_run_all_pass(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(BothPass)
         result = self.run_tests(suite)
+        self.assertTrue(result.wasSuccessful())
         self.assertEqual(result.testsRun, suite.countTestCases())
         self.assertEqual(result.errors, [])
         self.assertEqual(result.failures, [])
@@ -117,11 +118,12 @@ class PartitionTestCase(unittest.TestCase):
 
 
 def main():
-    runner = unittest.TextTestRunner(verbosity=2)
+    runner = unittest.TextTestRunner()
     suite1 = unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase)
     suite2 = unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase)
     alltests = unittest.TestSuite([suite1, suite2])
-    result = runner.run(alltests)
+    concurrent_suite = ConcurrentTestSuite(alltests, fork_for_tests(4))
+    result = runner.run(concurrent_suite)
     return len(result.errors) + len(result.failures)
 
 

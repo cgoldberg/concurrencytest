@@ -30,7 +30,7 @@ from itertools import cycle
 from subunit import ProtocolTestCase, TestProtocolClient
 from subunit.test_results import AutoTimingTestResultDecorator
 
-from testtools import ConcurrentTestSuite, iterate_tests, try_import
+from testtools import ConcurrentTestSuite, iterate_tests
 
 
 _all__ = [
@@ -38,6 +38,7 @@ _all__ = [
     'fork_for_tests',
     'partition_tests',
 ]
+
 
 def fork_for_tests(concurrency_num=1):
     """Implementation of `make_tests` used to construct `ConcurrentTestSuite`.
@@ -111,6 +112,7 @@ def partition_tests(suite, count):
 
 if __name__ == '__main__':
     import time
+
     class SampleTestCase(unittest.TestCase):
         """Dummy tests that sleep for demo."""
 

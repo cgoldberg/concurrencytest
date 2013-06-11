@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name='concurrencytest',
-    version='0.1.0',
+    version='0.1.1',
     py_modules=['concurrencytest'],
     install_requires=['python-subunit', 'testtools'],
     author='Corey Goldberg',

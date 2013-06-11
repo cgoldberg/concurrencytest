@@ -32,6 +32,14 @@ from subunit.test_results import AutoTimingTestResultDecorator
 
 from testtools import ConcurrentTestSuite, iterate_tests
 
+try:
+    import multiprocessing
+
+    CPU_COUNT = multiprocessing.cpu_count()
+
+except (ImportError, NotImplementedError):
+    CPU_COUNT = 1
+
 
 _all__ = [
     'ConcurrentTestSuite',
@@ -40,10 +48,11 @@ _all__ = [
 ]
 
 
-def fork_for_tests(concurrency_num=1):
+def fork_for_tests(concurrency_num=CPU_COUNT):
     """Implementation of `make_tests` used to construct `ConcurrentTestSuite`.
 
     :param concurrency_num: number of processes to use.
+
     """
     def do_fork(suite):
         """Take suite and start up multiple runners by forking (Unix only).
@@ -103,7 +112,7 @@ def partition_tests(suite, count):
     # resources, but on the other it avoids assigning blocks of slow tests to
     # just one partition.  So the slowest partition shouldn't be much slower
     # than the fastest.
-    partitions = [list() for i in range(count)]
+    partitions = [list() for _ in range(count)]
     tests = iterate_tests(suite)
     for partition, test in zip(cycle(partitions), tests):
         partition.append(test)
@@ -116,16 +125,20 @@ if __name__ == '__main__':
     class SampleTestCase(unittest.TestCase):
         """Dummy tests that sleep for demo."""
 
-        def test_me_1(self):
+        @staticmethod
+        def test_me_1():
             time.sleep(0.5)
 
-        def test_me_2(self):
+        @staticmethod
+        def test_me_2():
             time.sleep(0.5)
 
-        def test_me_3(self):
+        @staticmethod
+        def test_me_3():
             time.sleep(0.5)
 
-        def test_me_4(self):
+        @staticmethod
+        def test_me_4():
             time.sleep(0.5)
 
     # Load tests from SampleTestCase defined above

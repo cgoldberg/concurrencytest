@@ -7,7 +7,8 @@
 import unittest
 
 from testtools import try_imports, iterate_tests
-from concurrencytest import ConcurrentTestSuite, fork_for_tests, partition_tests
+from concurrencytest import (
+    ConcurrentTestSuite, fork_for_tests, partition_tests)
 
 
 StringIO = try_imports(['StringIO.StringIO', 'io.StringIO'])
@@ -22,7 +23,8 @@ class BothPass(unittest.TestCase):
 
 
 class OneError(unittest.TestCase):
-    def test_error(self):
+    @staticmethod
+    def test_error():
         raise Exception('ouch')
 
     def test_pass(self):
@@ -118,13 +120,18 @@ class PartitionTestCase(unittest.TestCase):
         self.assertEqual(len(parted_tests[0]), 8)
 
 
-def main():
-    runner = unittest.TextTestRunner()
+def setup():
     suite = unittest.TestSuite((
         unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase),
         unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase),
     ))
     concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(2))
+    return concurrent_suite
+
+
+def main():
+    runner = unittest.TextTestRunner()
+    concurrent_suite = setup()
     result = runner.run(concurrent_suite)
     return len(result.errors) + len(result.failures)
 

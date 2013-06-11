@@ -2,7 +2,6 @@
 """setup/install script for concurrencytest"""
 
 
-import os
 from setuptools import setup
 
 
@@ -29,5 +28,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Testing',
-    ]
+    ],
+    test_suite='test_concurrencytest.setup',
 )

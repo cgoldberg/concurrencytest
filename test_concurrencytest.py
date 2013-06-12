@@ -7,7 +7,12 @@
 import unittest
 
 from testtools import try_imports, iterate_tests
-from concurrencytest import ConcurrentTestSuite, fork_for_tests, partition_tests
+
+from concurrencytest import (
+    ConcurrentTestSuite,
+    fork_for_tests,
+    partition_tests
+)
 
 
 StringIO = try_imports(['StringIO.StringIO', 'io.StringIO'])
@@ -136,7 +141,7 @@ def main():
         unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase),
         unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase),
     ))
-    concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(2))
+    concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests())
     result = runner.run(concurrent_suite)
     return len(result.errors) + len(result.failures)
 

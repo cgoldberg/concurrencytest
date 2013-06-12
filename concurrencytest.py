@@ -26,6 +26,7 @@ import sys
 import traceback
 import unittest
 from itertools import cycle
+from multiprocessing import cpu_count
 
 from subunit import ProtocolTestCase, TestProtocolClient
 from subunit.test_results import AutoTimingTestResultDecorator
@@ -40,7 +41,10 @@ _all__ = [
 ]
 
 
-def fork_for_tests(concurrency_num=1):
+CPU_COUNT = cpu_count()
+
+
+def fork_for_tests(concurrency_num=CPU_COUNT):
     """Implementation of `make_tests` used to construct `ConcurrentTestSuite`.
 
     :param concurrency_num: number of processes to use.

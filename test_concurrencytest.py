@@ -86,6 +86,18 @@ class ForkingWorkersTestCase(unittest.TestCase):
         self.assertEqual(len(result.failures), 0)
         self.assertEqual(len(result.skipped), 1)
 
+    def test_run_default_concurrency(self):
+        runner = unittest.TextTestRunner(stream=StringIO())
+        suite = unittest.TestLoader().loadTestsFromTestCase(BothPass)
+        # Run across all cpu/processesors in machine
+        concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests())
+        result = runner.run(concurrent_suite)
+        self.assertTrue(result.wasSuccessful())
+        self.assertEqual(result.testsRun, suite.countTestCases())
+        self.assertEqual(result.errors, [])
+        self.assertEqual(result.failures, [])
+        self.assertEqual(result.skipped, [])
+
 
 class PartitionTestCase(unittest.TestCase):
 

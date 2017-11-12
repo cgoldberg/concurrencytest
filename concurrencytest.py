@@ -140,5 +140,6 @@ if __name__ == '__main__':
     runner.run(suite)
 
     # Run same tests across 4 processes
+    suite = unittest.TestLoader().loadTestsFromTestCase(SampleTestCase)
     concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(4))
     runner.run(concurrent_suite)

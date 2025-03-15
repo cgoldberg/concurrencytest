@@ -13,7 +13,7 @@ setup(
     description="testtools extension for running unittest suites concurrently",
     url="https://github.com/cgoldberg/concurrencytest",
     download_url="https://pypi.org/project/concurrencytest",
-    keywords="test testtools unittest concurrency parallel".split(),
+    keywords="test testing testtools unittest concurrency parallel".split(),
     license="GNU GPLv2+",
     classifiers=[
         "Development Status :: 4 - Beta",

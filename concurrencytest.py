@@ -77,11 +77,9 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
                     # read from stdin (otherwise its a roulette to see what
                     # child actually gets keystrokes for pdb etc).
                     sys.stdin.close()
-                    subunit_result = AutoTimingTestResultDecorator(
-                        TestProtocolClient(stream)
-                    )
+                    subunit_result = AutoTimingTestResultDecorator(TestProtocolClient(stream))
                     process_suite.run(subunit_result)
-                except:
+                except Exception:
                     # Try and report traceback on stream, but exit with error
                     # even if stream couldn't be created or something else
                     # goes wrong.  The traceback is formatted to a string and

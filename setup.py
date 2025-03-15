@@ -1,6 +1,5 @@
 """setup/install script for concurrencytest"""
 
-import os
 from setuptools import setup
 
 

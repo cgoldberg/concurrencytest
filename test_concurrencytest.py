@@ -1,21 +1,16 @@
 #!/usr/bin/env python
 #
-# Corey Goldberg, 2013
+# Corey Goldberg, 2013-2025
 #   License: GPLv2+
 
 
 import unittest
 
-from testtools import try_imports, iterate_tests
+from io import StringIO
 
-from concurrencytest import (
-    ConcurrentTestSuite,
-    fork_for_tests,
-    partition_tests
-)
+from testtools import iterate_tests
 
-
-StringIO = try_imports(['StringIO.StringIO', 'io.StringIO'])
+from concurrencytest import ConcurrentTestSuite, fork_for_tests, partition_tests
 
 
 class BothPass(unittest.TestCase):
@@ -28,7 +23,7 @@ class BothPass(unittest.TestCase):
 
 class OneError(unittest.TestCase):
     def test_error(self):
-        raise Exception('ouch')
+        raise Exception("ouch")
 
     def test_pass(self):
         self.assertTrue(True)
@@ -43,7 +38,7 @@ class OneFail(unittest.TestCase):
 
 
 class OneSkip(unittest.TestCase):
-    @unittest.skip('skipping')
+    @unittest.skip("skipping")
     def test_skip(self):
         self.assertTrue(True)
 
@@ -107,12 +102,14 @@ class ForkingWorkersTestCase(unittest.TestCase):
 class PartitionTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.suite = unittest.TestSuite([
-            unittest.TestLoader().loadTestsFromTestCase(BothPass),
-            unittest.TestLoader().loadTestsFromTestCase(OneError),
-            unittest.TestLoader().loadTestsFromTestCase(OneFail),
-            unittest.TestLoader().loadTestsFromTestCase(OneSkip),
-        ])
+        self.suite = unittest.TestSuite(
+            [
+                unittest.TestLoader().loadTestsFromTestCase(BothPass),
+                unittest.TestLoader().loadTestsFromTestCase(OneError),
+                unittest.TestLoader().loadTestsFromTestCase(OneFail),
+                unittest.TestLoader().loadTestsFromTestCase(OneSkip),
+            ]
+        )
 
     def test_num_tests(self):
         num_tests = len(list(iterate_tests(self.suite)))
@@ -137,15 +134,18 @@ class PartitionTestCase(unittest.TestCase):
 
 def main():
     runner = unittest.TextTestRunner()
-    suite = unittest.TestSuite((
-        unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase),
-    ))
+    suite = unittest.TestSuite(
+        (
+            unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase),
+            unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase),
+        )
+    )
     concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests())
     result = runner.run(concurrent_suite)
     return len(result.errors) + len(result.failures)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
+
     sys.exit(main())

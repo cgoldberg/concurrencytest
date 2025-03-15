@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
-# Modified by: Corey Goldberg, 2013
+# Modified by: Corey Goldberg, 2013-2025
 #   License: GPLv2+
 #
 # Original code from:
@@ -35,9 +35,9 @@ from testtools import ConcurrentTestSuite, iterate_tests
 
 
 _all__ = [
-    'ConcurrentTestSuite',
-    'fork_for_tests',
-    'partition_tests',
+    "ConcurrentTestSuite",
+    "fork_for_tests",
+    "partition_tests",
 ]
 
 
@@ -49,6 +49,7 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
 
     :param concurrency_num: number of processes to use.
     """
+
     def do_fork(suite):
         """Take suite and start up multiple runners by forking (Unix only).
 
@@ -69,7 +70,7 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
             pid = os.fork()
             if pid == 0:
                 try:
-                    stream = os.fdopen(c2pwrite, 'wb')
+                    stream = os.fdopen(c2pwrite, "wb")
                     os.close(c2pread)
                     # Leave stderr and stdout open so we can see test noise
                     # Close stdin so that the child goes away if it decides to
@@ -93,10 +94,11 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
                 os._exit(0)
             else:
                 os.close(c2pwrite)
-                stream = os.fdopen(c2pread, 'rb')
+                stream = os.fdopen(c2pread, "rb")
                 test = ProtocolTestCase(stream)
                 result.append(test)
         return result
+
     return do_fork
 
 
@@ -114,7 +116,7 @@ def partition_tests(suite, count):
     return partitions
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import time
 
     class SampleTestCase(unittest.TestCase):

@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
-# Modified by: Corey Goldberg, 2013
+# Modified by: Corey Goldberg, 2013-2025
 #   License: GPLv2+
 #
 # Original code from:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Corey Goldberg, 2013-2025
 #   License: GPLv2+

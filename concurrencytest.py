@@ -30,7 +30,6 @@ from multiprocessing import cpu_count
 
 from subunit import ProtocolTestCase, TestProtocolClient
 from subunit.test_results import AutoTimingTestResultDecorator
-
 from testtools import ConcurrentTestSuite, iterate_tests
 
 
@@ -117,7 +116,7 @@ def partition_tests(suite, count):
     # resources, but on the other it avoids assigning blocks of slow tests to
     # just one partition.  So the slowest partition shouldn't be much slower
     # than the fastest.
-    partitions = [list() for _ in range(count)]
+    partitions = [[] for _ in range(count)]
     tests = iterate_tests(suite)
     for partition, test in zip(cycle(partitions), tests):
         partition.append(test)

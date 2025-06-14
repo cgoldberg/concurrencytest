@@ -77,11 +77,14 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
                     # read from stdin (otherwise its a roulette to see what
                     # child actually gets keystrokes for pdb etc).
                     sys.stdin.close()
-                    subunit_result = AutoTimingTestResultDecorator(TestProtocolClient(stream))
+                    subunit_result = AutoTimingTestResultDecorator(
+                        TestProtocolClient(stream)
+                    )
 
-                    # Python 3.12 added unittest.TestResult.addDuration(), stub it out for now until 'subunit' supports it:
-                    # https://docs.python.org/3.12/library/unittest.html#unittest.TestResult.addDuration
-                    # https://github.com/testing-cabal/subunit/pull/85
+                    # Python 3.12 added unittest.TestResult.addDuration(),
+                    # stub it out for now until 'subunit' supports it:
+                    #   https://docs.python.org/3.12/library/unittest.html#unittest.TestResult.addDuration
+                    #   https://github.com/testing-cabal/subunit/pull/85
                     #
                     subunit_result.addDuration = lambda _test, elapsed: None
 

@@ -5,7 +5,6 @@
 
 
 import unittest
-
 from io import StringIO
 
 from testtools import iterate_tests

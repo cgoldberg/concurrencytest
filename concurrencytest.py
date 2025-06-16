@@ -22,15 +22,22 @@ Unix only.
 """
 
 import os
+import platform
 import sys
 import traceback
 import unittest
 from itertools import cycle
 from multiprocessing import cpu_count
 
+
 from subunit import ProtocolTestCase, TestProtocolClient
 from subunit.test_results import AutoTimingTestResultDecorator
 from testtools import ConcurrentTestSuite, iterate_tests
+
+
+system = platform.system()
+if system == "Windows":
+    raise OSError(f"concurrencytest is not supported on this platform: {system}")
 
 
 _all__ = [

@@ -86,14 +86,6 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
                     subunit_result = AutoTimingTestResultDecorator(
                         TestProtocolClient(stream)
                     )
-
-                    # Python 3.12 added unittest.TestResult.addDuration(),
-                    # stub it out for now until 'subunit' supports it:
-                    #   https://docs.python.org/3.12/library/unittest.html#unittest.TestResult.addDuration
-                    #   https://github.com/testing-cabal/subunit/pull/85
-                    #
-                    subunit_result.addDuration = lambda _test, elapsed: None
-
                     process_suite.run(subunit_result)
                 except Exception:
                     # Try and report traceback on stream, but exit with error

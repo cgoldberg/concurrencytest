@@ -1,6 +1,12 @@
 """setup/install script for concurrencytest"""
 
+import os
+
 from setuptools import setup
+
+here = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+    long_description = f.read()
 
 
 setup(
@@ -9,8 +15,9 @@ setup(
     py_modules=["concurrencytest"],
     install_requires=["python-subunit", "testtools"],
     author="Corey Goldberg",
-    description="testtools extension for running unittest suites concurrently",
-    long_description="testtools extension for running unittest suites concurrently",
+    description="Python testtools extension for running unittest suites concurrently",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/cgoldberg/concurrencytest",
     download_url="https://pypi.org/project/concurrencytest",
     keywords="test testing testtools unittest concurrency parallel".split(),

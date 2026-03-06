@@ -4,6 +4,7 @@
 #   License: GPLv2+
 
 
+import os
 import unittest
 from io import StringIO
 
@@ -43,6 +44,17 @@ class OneSkip(unittest.TestCase):
 
     def test_pass(self):
         self.assertTrue(True)
+
+
+class CheckEnvVar(unittest.TestCase):
+    def test_zero(self):
+        self.assertEqual('0', os.environ['WORKER_INDEX'])
+
+    def test_one(self):
+        self.assertEqual('1', os.environ['WORKER_INDEX'])
+
+    def test_two(self):
+        self.assertEqual('2', os.environ['WORKER_INDEX'])
 
 
 class ForkingWorkersTestCase(unittest.TestCase):
@@ -96,6 +108,22 @@ class ForkingWorkersTestCase(unittest.TestCase):
         self.assertEqual(result.errors, [])
         self.assertEqual(result.failures, [])
         self.assertEqual(result.skipped, [])
+
+    def test_worker_setup(self):
+        def set_env_var(index):
+            os.environ['WORKER_INDEX'] = str(index)
+
+        suite = unittest.TestSuite([
+            CheckEnvVar('test_zero'),
+            CheckEnvVar('test_one'),
+            CheckEnvVar('test_two'),
+        ])
+        suite = ConcurrentTestSuite(suite, fork_for_tests(3, worker_setup=set_env_var))
+        result = unittest.TextTestRunner(stream=StringIO()).run(suite)
+
+        self.assertTrue(result.wasSuccessful())
+        self.assertEqual(result.errors, [])
+        self.assertEqual(result.failures, [])
 
 
 class PartitionTestCase(unittest.TestCase):

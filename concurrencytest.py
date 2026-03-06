@@ -50,10 +50,12 @@ _all__ = [
 CPU_COUNT = cpu_count()
 
 
-def fork_for_tests(concurrency_num=CPU_COUNT):
+def fork_for_tests(concurrency_num=CPU_COUNT, worker_setup=None):
     """Implementation of `make_tests` used to construct `ConcurrentTestSuite`.
 
     :param concurrency_num: number of processes to use.
+    :param worker_setup: optional callable that takes a worker index (int) and
+        is called in each child process before running its tests.
     """
 
     def do_fork(suite):
@@ -68,7 +70,7 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
         test_blocks = partition_tests(suite, concurrency_num)
         # Clear the tests from the original suite so it doesn't keep them alive
         suite._tests[:] = []
-        for process_tests in test_blocks:
+        for i, process_tests in enumerate(test_blocks):
             process_suite = unittest.TestSuite(process_tests)
             # Also clear each split list so new suite has only reference
             process_tests[:] = []
@@ -78,6 +80,8 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
                 try:
                     stream = os.fdopen(c2pwrite, "wb")
                     os.close(c2pread)
+                    if worker_setup:
+                        worker_setup(i)
                     # Leave stderr and stdout open so we can see test noise
                     # Close stdin so that the child goes away if it decides to
                     # read from stdin (otherwise its a roulette to see what

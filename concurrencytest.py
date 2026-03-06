@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Modified by: Corey Goldberg, 2013-2025
+# Modified by: Corey Goldberg, 2013-2026
 #   License: GPLv2+
 #
 # Original code from:
@@ -33,7 +33,6 @@ from multiprocessing import cpu_count
 from subunit import ProtocolTestCase, TestProtocolClient
 from subunit.test_results import AutoTimingTestResultDecorator
 from testtools import ConcurrentTestSuite, iterate_tests
-
 
 system = platform.system()
 if system == "Windows":

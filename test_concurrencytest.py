@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 #
-# Corey Goldberg, 2013-2025
+# Test suite for concurrencytest
+#
+# Corey Goldberg, 2013-2026
 #   License: GPLv2+
 
 
 import unittest
 from io import StringIO
+import sys
 
 from testtools import iterate_tests
 
@@ -47,55 +50,58 @@ class OneSkip(unittest.TestCase):
 
 class ForkingWorkersTestCase(unittest.TestCase):
 
-    def run_tests(self, suite):
+    def run_tests(self, suite, num_processes=None):
+        """Run a suite using ConcurrentTestSuite with specified number of processes.
+
+        If a number is given for `num_processes`, run tests across N processes.
+        Otherwise, use default concurrency (one process per available CPU core).
+        """
         runner = unittest.TextTestRunner(stream=StringIO())
-        # Run tests across 2 processes
-        concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(2))
+        if num_processes:
+            concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(num_processes))
+        else:
+            concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests())
         result = runner.run(concurrent_suite)
         self.assertEqual(result.testsRun, suite.countTestCases())
         return result
 
     def test_run_all_pass(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(BothPass)
-        result = self.run_tests(suite)
+        result = self.run_tests(suite, 2)
         self.assertTrue(result.wasSuccessful())
-        self.assertEqual(result.testsRun, suite.countTestCases())
-        self.assertEqual(result.errors, [])
-        self.assertEqual(result.failures, [])
-        self.assertEqual(result.skipped, [])
+        self.assertEqual(len(result.errors), 0)
+        self.assertEqual(len(result.failures), 0)
+        self.assertEqual(len(result.skipped), 0)
 
     def test_run_with_error(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(OneError)
-        result = self.run_tests(suite)
+        result = self.run_tests(suite, 2)
         self.assertEqual(len(result.errors), 1)
         self.assertEqual(len(result.failures), 0)
         self.assertEqual(len(result.skipped), 0)
 
     def test_run_with_fail(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(OneFail)
-        result = self.run_tests(suite)
+        result = self.run_tests(suite, 2)
         self.assertEqual(len(result.errors), 0)
         self.assertEqual(len(result.failures), 1)
         self.assertEqual(len(result.skipped), 0)
 
     def test_run_with_skip(self):
         suite = unittest.TestLoader().loadTestsFromTestCase(OneSkip)
-        result = self.run_tests(suite)
+        result = self.run_tests(suite, 2)
         self.assertEqual(len(result.errors), 0)
         self.assertEqual(len(result.failures), 0)
         self.assertEqual(len(result.skipped), 1)
 
     def test_run_default_concurrency(self):
-        runner = unittest.TextTestRunner(stream=StringIO())
         suite = unittest.TestLoader().loadTestsFromTestCase(BothPass)
-        # Run across all cpu/processesors in machine
-        concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests())
-        result = runner.run(concurrent_suite)
+        # Run 1 process per CPU corec
+        result = self.run_tests(suite)
         self.assertTrue(result.wasSuccessful())
-        self.assertEqual(result.testsRun, suite.countTestCases())
-        self.assertEqual(result.errors, [])
-        self.assertEqual(result.failures, [])
-        self.assertEqual(result.skipped, [])
+        self.assertEqual(len(result.errors), 0)
+        self.assertEqual(len(result.failures), 0)
+        self.assertEqual(len(result.skipped), 0)
 
 
 class PartitionTestCase(unittest.TestCase):
@@ -131,20 +137,42 @@ class PartitionTestCase(unittest.TestCase):
         self.assertEqual(len(parted_tests[0]), 8)
 
 
+class ForkForTestsTestCase(unittest.TestCase):
+
+    def test_fork_for_tests_returns_function(self):
+        worker_func = fork_for_tests()
+        self.assertTrue(callable(worker_func))
+
+    def test_fork_for_tests_returns_function_when_num_procs_passed(self):
+        worker_func = fork_for_tests(4)
+        self.assertTrue(callable(worker_func))
+
+    def test_fork_for_tests_creates_expected_workers(self):
+        num_processes = 4
+        worker_func = fork_for_tests(num_processes)
+        workers = list(worker_func(unittest.TestSuite()))
+        self.assertEqual(len(workers), num_processes)
+
+
+class SimpleTextTestResult(unittest.TextTestResult):
+    def getDescription(self, test):
+        return str(test._testMethodName)
+
+
 def main():
-    runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner(
+        stream=sys.stdout, verbosity=2, resultclass=SimpleTextTestResult
+    )
     suite = unittest.TestSuite(
         (
             unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase),
             unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase),
+            unittest.TestLoader().loadTestsFromTestCase(ForkForTestsTestCase),
         )
     )
-    concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests())
-    result = runner.run(concurrent_suite)
+    result = runner.run(suite)
     return len(result.errors) + len(result.failures)
 
 
 if __name__ == "__main__":
-    import sys
-
     sys.exit(main())

@@ -29,7 +29,6 @@ import unittest
 from itertools import cycle
 from multiprocessing import cpu_count
 
-
 from subunit import ProtocolTestCase, TestProtocolClient
 from subunit.test_results import AutoTimingTestResultDecorator
 from testtools import ConcurrentTestSuite, iterate_tests

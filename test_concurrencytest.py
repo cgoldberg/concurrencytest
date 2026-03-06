@@ -6,9 +6,9 @@
 #   License: GPLv2+
 
 
+import sys
 import unittest
 from io import StringIO
-import sys
 
 from testtools import iterate_tests
 

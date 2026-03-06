@@ -11,7 +11,7 @@ with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="concurrencytest",
-    version="0.1.5dev0",
+    version="0.1.5",
     py_modules=["concurrencytest"],
     install_requires=["python-subunit", "testtools"],
     author="Corey Goldberg",

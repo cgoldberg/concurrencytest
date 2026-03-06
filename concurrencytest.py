@@ -68,13 +68,14 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
         test_blocks = partition_tests(suite, concurrency_num)
         # Clear the tests from the original suite so it doesn't keep them alive
         suite._tests[:] = []
-        for process_tests in test_blocks:
+        for worker_id, process_tests in enumerate(test_blocks):
             process_suite = unittest.TestSuite(process_tests)
             # Also clear each split list so new suite has only reference
             process_tests[:] = []
             c2pread, c2pwrite = os.pipe()
             pid = os.fork()
             if pid == 0:
+                os.environ["TEST_WORKER_ID"] = str(worker_id)
                 try:
                     stream = os.fdopen(c2pwrite, "wb")
                     os.close(c2pread)

@@ -38,7 +38,7 @@ if system == "Windows":
     raise OSError(f"concurrencytest is not supported on this platform: {system}")
 
 
-_all__ = [
+__all__ = [
     "ConcurrentTestSuite",
     "fork_for_tests",
     "partition_tests",

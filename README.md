@@ -12,7 +12,7 @@ Python testtools extension for running unittest suites concurrently.
 - License: [GPLv2+](https://raw.githubusercontent.com/cgoldberg/concurrencytest/refs/heads/master/LICENSE)
 - Copyright (c) 2013-2026 [Corey Goldberg](https://github.com/cgoldberg)
 - Original code from:
-  - Bazaar (bzrlib.tests.__init__.py, v2.6, copied Jun 01 2013)
+  - Bazaar (`bzrlib.tests.__init__.py`, v2.6, copied Jun 01 2013)
   - Copyright (c) 2005-2011 Canonical Ltd
 
 ----

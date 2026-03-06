@@ -40,7 +40,7 @@ import unittest
 from concurrencytest import ConcurrentTestSuite, fork_for_tests
 
 
-class SampleTestCase(unittest.TestCase):
+class ExampleTestCase(unittest.TestCase):
     """Dummy tests that sleep for demo."""
 
     def test_me_1(self):
@@ -56,20 +56,19 @@ class SampleTestCase(unittest.TestCase):
         time.sleep(0.5)
 
 
-# Load tests from SampleTestCase defined above
-suite = unittest.TestLoader().loadTestsFromTestCase(SampleTestCase)
 runner = unittest.TextTestRunner()
 
-# Run tests sequentially
+# Run the tests from above sequentially
+suite = unittest.TestLoader().loadTestsFromTestCase(ExampleTestCase)
 runner.run(suite)
 
-# Run same tests across 4 processes
-suite = unittest.TestLoader().loadTestsFromTestCase(SampleTestCase)
+# Run same tests concurrently across 4 processes
+suite = unittest.TestLoader().loadTestsFromTestCase(ExampleTestCase)
 concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(4))
 runner.run(concurrent_suite)
 
-# Run same tests across all available CPU cores (1 processes per core)
-suite = unittest.TestLoader().loadTestsFromTestCase(SampleTestCase)
+# Run same tests concurrently using 1 process per available CPU core
+suite = unittest.TestLoader().loadTestsFromTestCase(ExampleTestCase)
 concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests())
 runner.run(concurrent_suite)
 ```

@@ -6,6 +6,7 @@
 #   License: GPLv2+
 
 
+import os
 import sys
 import unittest
 from io import StringIO
@@ -46,6 +47,12 @@ class OneSkip(unittest.TestCase):
 
     def test_pass(self):
         self.assertTrue(True)
+
+
+class WorkerCheck(unittest.TestCase):
+    def test_worker_id(self):
+        worker_id = os.environ.get("TEST_WORKER_ID")
+        self.assertIsNotNone(worker_id)
 
 
 class ForkingWorkersTestCase(unittest.TestCase):
@@ -103,6 +110,15 @@ class ForkingWorkersTestCase(unittest.TestCase):
         # Run 1 process per CPU corec
         result = self.run_tests(suite)
         self.assertEqual(result.testsRun, 2)
+        self.assertTrue(result.wasSuccessful())
+        self.assertEqual(len(result.errors), 0)
+        self.assertEqual(len(result.failures), 0)
+        self.assertEqual(len(result.skipped), 0)
+
+    def test_worker_id_env_var_is_assigned(self):
+        suite = unittest.TestLoader().loadTestsFromTestCase(WorkerCheck)
+        result = self.run_tests(suite)
+        self.assertEqual(result.testsRun, 1)
         self.assertTrue(result.wasSuccessful())
         self.assertEqual(len(result.errors), 0)
         self.assertEqual(len(result.failures), 0)

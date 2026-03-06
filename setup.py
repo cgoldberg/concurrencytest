@@ -5,7 +5,7 @@ import os
 from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+with open(os.path.join(here, "README.md")) as f:
     long_description = f.read()
 
 
@@ -15,7 +15,7 @@ setup(
     py_modules=["concurrencytest"],
     install_requires=["python-subunit", "testtools"],
     author="Corey Goldberg",
-    description="Python testtools extension for running unittest suites concurrently",
+    description="Python testtools extension for running unittest test suites concurrently",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/cgoldberg/concurrencytest",
@@ -23,7 +23,6 @@ setup(
     keywords="test testing testtools unittest concurrency parallel".split(),
     license="GNU GPLv2+",
     classifiers=[
-        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Operating System :: POSIX",
         "Operating System :: Unix",

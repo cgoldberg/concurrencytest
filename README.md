@@ -3,7 +3,7 @@ concurrencytest
 
 ![testing goats](https://raw.github.com/cgoldberg/concurrencytest/master/testing-goats.png "testing goats")
 
-Python testtools extension for running unittest suites concurrently.
+Python testtools extension for running unittest test suites concurrently.
 
 ----
 
@@ -26,6 +26,7 @@ pip install concurrencytest
 
 Requires:
 
+- support for `os.fork()` (Unix-like systems only)
 - [testtools](https://pypi.python.org/pypi/testtools) : `pip install testtools`
 - [python-subunit](https://pypi.python.org/pypi/python-subunit) : `pip install python-subunit`
 

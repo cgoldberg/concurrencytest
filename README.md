@@ -30,6 +30,9 @@ This module provides the `ConcurrentTestSuite` class from `testtools` and the
 You can specify the number of worker process to use when calling `fork_for_tests`, or
 use the default concurrecy (1 process per available CPU core).
 
+For more info about writing/running tests with the `unittest` testing framework, see
+the [official documentation](https://docs.python.org/3/library/unittest.html).
+
 ----
 
 Install from PyPI:

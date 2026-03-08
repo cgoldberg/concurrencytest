@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "concurrencytest"
+version = "0.1.7dev0"
+description = "Python testtools extension for running unittest test suites concurrently"
+license = "GPL-2.0-or-later"
+license-files = ["LICENSE"]
+authors = [{name = "Corey Goldberg"}]
+maintainers = [{name = "Corey Goldberg"}]
+readme = "README.md"
+requires-python = ">= 3.10"
+keywords = ["test", "testing", "testtools", "unittest", "concurrency", "parallel"]
+classifiers = [
+        "Intended Audience :: Developers",
+        "Intended Audience :: Information Technology",
+        "Operating System :: POSIX",
+        "Operating System :: Unix",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Software Development :: Testing",
+]
+dependencies = [
+    "python-subunit",
+    "testtools",
+]
+
+[project.urls]
+homepage = "https://github.com/cgoldberg/concurrencytest"
+source = "https://github.com/cgoldberg/concurrencytest"
+download = "https://pypi.org/project/concurrencytest"
+
+[dependency-groups]
+dev = [
+    "tox",
+]
+lint = [
+    "black",
+    "refurb",
+    "ruff",
+]
+validate = [
+    "packaging",
+    "validate-pyproject",
+]
+
+[tool.setuptools]
+py-modules = ["concurrencytest"]
+
+[tool.black]
+line-length = 88
+target-version = [
+    "py310", "py311", "py312", "py313", "py314"
+]
+
+[tool.ruff]
+line-length = 88
+respect-gitignore = true
+target-version = "py310"
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+select = [
+    "E", "F", "I", "N", "FURB", "RUF", "TID", "UP", "W"
+]
+extend-ignore = [
+    "N802",
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 88
+
+[tool.refurb]
+python_version = "3.10"
+enable_all = true

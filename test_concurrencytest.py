@@ -5,7 +5,6 @@
 # Corey Goldberg, 2013-2026
 #   License: GPLv2+
 
-
 import os
 import sys
 import unittest
@@ -14,6 +13,9 @@ from io import StringIO
 from testtools import iterate_tests
 
 from concurrencytest import ConcurrentTestSuite, fork_for_tests, partition_tests
+
+# Dummy test classses used by internal tests. Not to be run on their own.
+# -----------------------------------------------------------------------
 
 
 class BothPass(unittest.TestCase):
@@ -55,8 +57,11 @@ class WorkerCheck(unittest.TestCase):
         self.assertIsNotNone(worker_id)
 
 
-class ForkingWorkersTestCase(unittest.TestCase):
+# End of dummy test classes
+# ------------------------------------------------------------------------
 
+
+class ForkingWorkersTestCase(unittest.TestCase):
     def run_tests(self, suite, num_processes=None):
         """Run a suite using ConcurrentTestSuite with specified number of processes.
 
@@ -126,7 +131,6 @@ class ForkingWorkersTestCase(unittest.TestCase):
 
 
 class PartitionTestCase(unittest.TestCase):
-
     def setUp(self):
         self.suite = unittest.TestSuite(
             [
@@ -159,7 +163,6 @@ class PartitionTestCase(unittest.TestCase):
 
 
 class ForkForTestsTestCase(unittest.TestCase):
-
     def test_fork_for_tests_returns_function(self):
         worker_func = fork_for_tests()
         self.assertTrue(callable(worker_func))

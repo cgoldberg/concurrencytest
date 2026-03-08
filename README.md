@@ -19,7 +19,7 @@ concurrencytest
 
 ## About
 
-`concurrencytest` allows you to parallelize a `unnittest` tests across a configurable
+`concurrencytest` allows you to parallelize a `unittest` tests across a configurable
 number of worker processes. Tests are assigned to worker processes in a round-robin
 fashion.
 

@@ -49,6 +49,7 @@ lint = [
 ]
 validate = [
     "packaging",
+    "tomli",
     "validate-pyproject",
 ]
 

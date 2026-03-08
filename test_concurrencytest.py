@@ -5,10 +5,13 @@
 # Corey Goldberg, 2013-2026
 #   License: GPLv2+
 
+import importlib
 import os
+import re
 import sys
 import unittest
 from io import StringIO
+from unittest.mock import patch
 
 from testtools import iterate_tests
 
@@ -178,6 +181,18 @@ class ForkForTestsTestCase(unittest.TestCase):
         self.assertEqual(len(workers), num_processes)
 
 
+@patch("platform.system", return_value="Windows")
+class InvalidPlatformTestCase(unittest.TestCase):
+    def test_import_exception_on_windows(self, _):
+        message = (
+            "concurrencytest is not supported on Windows. "
+            "It requires `os.fork()` which only works on Unix-like systems."
+        )
+        sys.modules.pop("concurrencytest", None)
+        with self.assertRaisesRegex(OSError, re.escape(message)):
+            importlib.import_module("concurrencytest")
+
+
 class SimpleTextTestResult(unittest.TextTestResult):
     def getDescription(self, test):
         return str(test._testMethodName)
@@ -192,6 +207,7 @@ def main():
             unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase),
             unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase),
             unittest.TestLoader().loadTestsFromTestCase(ForkForTestsTestCase),
+            unittest.TestLoader().loadTestsFromTestCase(InvalidPlatformTestCase),
         )
     )
     result = runner.run(suite)

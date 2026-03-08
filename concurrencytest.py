@@ -10,7 +10,7 @@
 
 """Python testtools extension for running unittest test suites concurrently.
 
-The `testtools` project provides a ConcurrentTestSuite class, but does
+The `testtools` project provides a `ConcurrentTestSuite` class, but does
 not provide a `make_tests` implementation needed to use it.
 
 This allows you to parallelize a test run across a configurable number
@@ -22,7 +22,6 @@ Unix-like systems only.
 """
 
 import os
-import platform
 import sys
 import traceback
 import unittest
@@ -33,11 +32,12 @@ from subunit import ProtocolTestCase, TestProtocolClient
 from subunit.test_results import AutoTimingTestResultDecorator
 from testtools import ConcurrentTestSuite, iterate_tests
 
-if platform.system() == "Windows":
-    raise OSError(
-        "concurrencytest is not supported on Windows. "
-        "It requires `os.fork()` which only works on Unix-like systems."
+if not callable(getattr(os, "fork", None)):
+    message = (
+        "concurrencytest requires os.fork(), "
+        "which is only available on Unix-like systems."
     )
+    raise OSError(message)
 
 
 __all__ = [
@@ -111,44 +111,13 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
 
 def partition_tests(suite, count):
     """Partition suite into count lists of tests."""
-    # This just assigns tests in a round-robin fashion.  On one hand this
+    # This just assigns tests in a round-robin fashion. On one hand this
     # splits up blocks of related tests that might run faster if they shared
     # resources, but on the other it avoids assigning blocks of slow tests to
-    # just one partition.  So the slowest partition shouldn't be much slower
+    # just one partition. So the slowest partition shouldn't be much slower
     # than the fastest.
     partitions = [[] for _ in range(count)]
     tests = iterate_tests(suite)
     for partition, test in zip(cycle(partitions), tests):
         partition.append(test)
     return partitions
-
-
-if __name__ == "__main__":
-    import time
-
-    class SampleTestCase(unittest.TestCase):
-        """Dummy tests that sleep for demo."""
-
-        def test_me_1(self):
-            time.sleep(0.5)
-
-        def test_me_2(self):
-            time.sleep(0.5)
-
-        def test_me_3(self):
-            time.sleep(0.5)
-
-        def test_me_4(self):
-            time.sleep(0.5)
-
-    # Load tests from SampleTestCase defined above
-    suite = unittest.TestLoader().loadTestsFromTestCase(SampleTestCase)
-    runner = unittest.TextTestRunner()
-
-    # Run tests sequentially
-    runner.run(suite)
-
-    # Run same tests across 4 processes
-    suite = unittest.TestLoader().loadTestsFromTestCase(SampleTestCase)
-    concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(4))
-    runner.run(concurrent_suite)

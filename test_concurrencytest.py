@@ -181,12 +181,12 @@ class ForkForTestsTestCase(unittest.TestCase):
         self.assertEqual(len(workers), num_processes)
 
 
-@patch("platform.system", return_value="Windows")
-class InvalidPlatformTestCase(unittest.TestCase):
-    def test_import_exception_on_windows(self, _):
+@patch("os.fork", new=None)  # simulate running on a platform without fork support
+class UnsupportedPlatformTestCase(unittest.TestCase):
+    def test_import_exception_on_platform_without_fork(self):
         message = (
-            "concurrencytest is not supported on Windows. "
-            "It requires `os.fork()` which only works on Unix-like systems."
+            "concurrencytest requires os.fork(), "
+            "which is only available on Unix-like systems."
         )
         sys.modules.pop("concurrencytest", None)
         with self.assertRaisesRegex(OSError, re.escape(message)):
@@ -207,7 +207,7 @@ def main():
             unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase),
             unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase),
             unittest.TestLoader().loadTestsFromTestCase(ForkForTestsTestCase),
-            unittest.TestLoader().loadTestsFromTestCase(InvalidPlatformTestCase),
+            unittest.TestLoader().loadTestsFromTestCase(UnsupportedPlatformTestCase),
         )
     )
     result = runner.run(suite)

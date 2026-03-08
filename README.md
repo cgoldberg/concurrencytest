@@ -31,7 +31,7 @@ You can specify the number of worker process to use when calling `fork_for_tests
 use the default concurrecy (1 process per available CPU core).
 
 For more info about writing/running tests with the `unittest` testing framework, see
-the [official documentation](https://docs.python.org/3/library/unittest.html).
+the [official documentation](https://docs.python.org/library/unittest.html).
 
 ----
 

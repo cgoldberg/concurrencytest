@@ -21,7 +21,7 @@ jobs:
           check-latest: true
       - name: Install dependencies
         run: |
-          pip install -U python-subunit testtools tox
+          pip tox
       - name: Run validation
         run: |
             tox
@@ -34,4 +34,7 @@ jobs:
           TOXENV: lint
       - name: Run tests
         run: |
+          python -m ven venv
+          source ./venv/bin/activate
+          pip install .
           python test_concurrencytest.py

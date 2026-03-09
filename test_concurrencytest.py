@@ -132,6 +132,18 @@ class ForkingWorkersTestCase(unittest.TestCase):
         self.assertEqual(len(result.failures), 0)
         self.assertEqual(len(result.skipped), 0)
 
+    def test_import_exception_on_platform_without_fork(self):
+        message = (
+            "concurrencytest requires os.fork(), "
+            "which is only available on Unix-like systems."
+        )
+        sys.modules.pop("concurrencytest", None)
+        # Simulate running on a platform without fork support
+        with patch.object(os, "fork", new=None):
+            with self.assertRaisesRegex(OSError, re.escape(message)):
+                importlib.import_module("concurrencytest")
+        importlib.import_module("concurrencytest")
+
 
 class PartitionTestCase(unittest.TestCase):
     def setUp(self):
@@ -181,18 +193,6 @@ class ForkForTestsTestCase(unittest.TestCase):
         self.assertEqual(len(workers), num_processes)
 
 
-@patch("os.fork", new=None) # simulate running on a platform without fork support
-class UnsupportedPlatformTestCase(unittest.TestCase):
-    def test_import_exception_on_platform_without_fork(self):
-        message = (
-            "concurrencytest requires os.fork(), "
-            "which is only available on Unix-like systems."
-        )
-        sys.modules.pop("concurrencytest", None)
-        with self.assertRaisesRegex(OSError, re.escape(message)):
-            importlib.import_module("concurrencytest")
-
-
 class SimpleTextTestResult(unittest.TextTestResult):
     def getDescription(self, test):
         return str(test._testMethodName)
@@ -207,7 +207,6 @@ def main():
             unittest.TestLoader().loadTestsFromTestCase(ForkingWorkersTestCase),
             unittest.TestLoader().loadTestsFromTestCase(PartitionTestCase),
             unittest.TestLoader().loadTestsFromTestCase(ForkForTestsTestCase),
-            unittest.TestLoader().loadTestsFromTestCase(UnsupportedPlatformTestCase),
         )
     )
     result = runner.run(suite)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# concurrencytest module
 #
 # Modified by: Corey Goldberg, 2013-2026
 #   License: GPLv2+
@@ -21,6 +21,12 @@ data to arrive from someplace else and can benefit from cocncurrency.
 Unix-like systems only.
 """
 
+__all__ = [
+    "ConcurrentTestSuite",
+    "fork_for_tests",
+]
+
+
 import os
 import sys
 import traceback
@@ -38,13 +44,6 @@ if not callable(getattr(os, "fork", None)):
         "which is only available on Unix-like systems."
     )
     raise OSError(message)
-
-
-__all__ = [
-    "ConcurrentTestSuite",
-    "fork_for_tests",
-    "partition_tests",
-]
 
 
 CPU_COUNT = cpu_count()
@@ -110,12 +109,14 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
 
 
 def partition_tests(suite, count):
-    """Partition suite into count lists of tests."""
-    # This just assigns tests in a round-robin fashion. On one hand this
-    # splits up blocks of related tests that might run faster if they shared
-    # resources, but on the other it avoids assigning blocks of slow tests to
-    # just one partition. So the slowest partition shouldn't be much slower
-    # than the fastest.
+    """Partition suite into count lists of tests.
+
+    This just assigns tests in a round-robin fashion. On one hand this
+    splits up blocks of related tests that might run faster if they shared
+    resources, but on the other it avoids assigning blocks of slow tests to
+    just one partition. So the slowest partition shouldn't be much slower
+    than the fastest.
+    """
     partitions = [[] for _ in range(count)]
     tests = iterate_tests(suite)
     for partition, test in zip(cycle(partitions), tests):

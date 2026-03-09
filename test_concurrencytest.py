@@ -142,6 +142,7 @@ class ForkingWorkersTestCase(unittest.TestCase):
         with patch.object(os, "fork", new=None):
             with self.assertRaisesRegex(OSError, re.escape(message)):
                 importlib.import_module("concurrencytest")
+        # Restore concurrencytest so other tests can use it
         importlib.import_module("concurrencytest")
 
 

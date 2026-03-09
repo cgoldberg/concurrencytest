@@ -143,6 +143,7 @@ class ForkingWorkersTestCase(unittest.TestCase):
             with self.assertRaisesRegex(OSError, re.escape(message)):
                 importlib.import_module("concurrencytest")
         # Restore concurrencytest so other tests can use it
+        sys.modules.pop("concurrencytest", None)
         importlib.import_module("concurrencytest")
 
 

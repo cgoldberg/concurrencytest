@@ -181,7 +181,7 @@ class ForkForTestsTestCase(unittest.TestCase):
         self.assertEqual(len(workers), num_processes)
 
 
-@patch("os.fork", new=None)  # simulate running on a platform without fork support
+@patch("os.fork", new=None) # simulate running on a platform without fork support
 class UnsupportedPlatformTestCase(unittest.TestCase):
     def test_import_exception_on_platform_without_fork(self):
         message = (

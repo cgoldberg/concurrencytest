@@ -164,7 +164,9 @@ class ForkingWorkersTest(TestCase):
             [defaultTestLoader.loadTestsFromTestCase(tc) for tc in test_classes]
         )
         runner = TextTestRunner(stream=io.StringIO())
-        make_tests = fork_for_tests(num_processes=num_processes, partition_func=partition_func)
+        make_tests = fork_for_tests(
+            num_processes=num_processes, partition_func=partition_func
+        )
 
         if num_processes:
             make_tests = fork_for_tests(partition_func=partition_func)

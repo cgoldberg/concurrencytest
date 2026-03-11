@@ -47,6 +47,9 @@ lint = [
     "refurb",
     "ruff",
 ]
+type = [
+    "mypy",
+]
 validate = [
     "packaging",
     "tomli",
@@ -55,6 +58,9 @@ validate = [
 
 [tool.setuptools]
 py-modules = ["concurrencytest"]
+
+[tool.mypy]
+ignore_missing_imports = true
 
 [tool.black]
 line-length = 88

@@ -25,17 +25,19 @@ from unittest import (
 from testtools import iterate_tests
 
 from concurrencytest import (
-    BothPass,
     ConcurrentTestSuite,
+    fork_for_tests,
+    partition_tests,
+    partition_tests_by_class,
+)
+from concurrencytest_tests import (
+    BothPass,
     OneError,
     OneFail,
     OneSkip,
     OneWithSetupTearDownClass,
     TwoWithSetupTearDownClass,
     WorkerCheck,
-    fork_for_tests,
-    partition_tests,
-    partition_tests_by_class,
 )
 
 

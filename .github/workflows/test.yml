@@ -22,12 +22,12 @@ jobs:
       - name: Install dependencies
         run: |
           pip install tox
-      - name: Run validation
+      - name: Validate project configuration
         run: |
             tox
         env:
           TOXENV: validate
-      - name: Run linting
+      - name: Run linter and formatter
         run: |
             tox
         env:

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 #
-# Test suite for concurrencytest
-#
-# Corey Goldberg, 2013-2026
-#   License: GPLv2+
+# Copyright (c) 2013-2026 Corey Goldberg (https://github.com/cgoldberg)
+#  - License: GPLv2+
+
+
+"""Test suite for concurrencytest."""
 
 import importlib
 import io
@@ -19,7 +20,6 @@ from unittest import (
     TextTestRunner,
     defaultTestLoader,
     mock,
-    skip,
 )
 
 from testtools import iterate_tests
@@ -30,81 +30,15 @@ from concurrencytest import (
     partition_tests,
     partition_tests_by_class,
 )
-
-# Dummy test classses used by internal tests. Not to be run on their own.
-# -----------------------------------------------------------------------
-
-
-class BothPass(TestCase):
-    def test_pass_1(self):
-        self.assertTrue(True)
-
-    def test_pass_2(self):
-        self.assertTrue(True)
-
-
-class OneError(TestCase):
-    def test_error(self):
-        raise Exception("ouch")
-
-    def test_pass(self):
-        self.assertTrue(True)
-
-
-class OneFail(TestCase):
-    def test_fail(self):
-        self.assertTrue(False)
-
-    def test_pass(self):
-        self.assertTrue(True)
-
-
-class OneSkip(TestCase):
-    @skip("skipping")
-    def test_skip(self):
-        self.assertTrue(True)
-
-    def test_pass(self):
-        self.assertTrue(True)
-
-
-class OneWithSetupTearDownClass(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    def test_1(self):
-        pass
-
-
-class TwoWithSetupTearDownClass(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    def test_2(self):
-        pass
-
-    def test_3(self):
-        pass
-
-
-class WorkerCheck(TestCase):
-    def test_worker_id(self):
-        worker_id = os.environ.get("TEST_WORKER_ID")
-        self.assertIsNotNone(worker_id)
-
-
-# End of dummy test classes
-# ------------------------------------------------------------------------
+from concurrencytest_tests import (
+    BothPass,
+    OneError,
+    OneFail,
+    OneSkip,
+    OneWithSetupTearDownClass,
+    TwoWithSetupTearDownClass,
+    WorkerCheck,
+)
 
 
 class ConcurrentTestSuiteTest(TestCase):
@@ -157,6 +91,7 @@ class ForkingWorkersTest(TestCase):
 
         Returns:
             Aggregated result from all tests.
+
         """
         if isinstance(test_classes, type) and issubclass(test_classes, TestCase):
             test_classes = (test_classes,)

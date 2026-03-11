@@ -24,6 +24,7 @@ from unittest import (
 
 from testtools import iterate_tests
 
+import concurrencytest_tests
 from concurrencytest import (
     ConcurrentTestSuite,
     fork_for_tests,
@@ -37,7 +38,7 @@ from concurrencytest_tests import (
     OneSkip,
     OneWithSetupTearDownClass,
     TwoWithSetupTearDownClass,
-    WorkerCheck,
+    WorkerIDCheck,
 )
 
 
@@ -102,7 +103,6 @@ class ForkingWorkersTest(TestCase):
         make_tests = fork_for_tests(
             num_processes=num_processes, partition_func=partition_func
         )
-
         if num_processes:
             make_tests = fork_for_tests(partition_func=partition_func)
         else:
@@ -114,25 +114,13 @@ class ForkingWorkersTest(TestCase):
         return result
 
     def test_all_tests_run(self):
-        test_classes = (
-            BothPass,
-            OneError,
-            OneFail,
-            OneSkip,
-            OneWithSetupTearDownClass,
-            TwoWithSetupTearDownClass,
-        )
+        suite = defaultTestLoader.loadTestsFromModule(concurrencytest_tests)
+        test_classes = list({type(t) for t in iterate_tests(suite)})
         self._run_tests(test_classes)
 
     def test_all_tests_run_with_partition(self):
-        test_classes = (
-            BothPass,
-            OneError,
-            OneFail,
-            OneSkip,
-            OneWithSetupTearDownClass,
-            TwoWithSetupTearDownClass,
-        )
+        suite = defaultTestLoader.loadTestsFromModule(concurrencytest_tests)
+        test_classes = list({type(t) for t in iterate_tests(suite)})
         self._run_tests(test_classes, partition_tests_by_class)
 
     def test_run_all_pass(self):
@@ -174,7 +162,7 @@ class ForkingWorkersTest(TestCase):
         self.assertEqual(len(result.skipped), 0)
 
     def test_worker_id_env_var_is_assigned(self):
-        result = self._run_tests(WorkerCheck)
+        result = self._run_tests(WorkerIDCheck)
         self.assertEqual(result.testsRun, 1)
         self.assertTrue(result.wasSuccessful())
         self.assertEqual(len(result.errors), 0)

@@ -69,7 +69,8 @@ class TwoWithSetupTearDownClass(unittest.TestCase):
         pass
 
 
-class WorkerCheck(unittest.TestCase):
+class WorkerIDCheck(unittest.TestCase):
     def test_worker_id(self):
         worker_id = os.environ.get("TEST_WORKER_ID")
         self.assertIsNotNone(worker_id)
+        self.assertGreaterEqual(int(worker_id), 0)

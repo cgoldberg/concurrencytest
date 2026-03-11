@@ -3,8 +3,13 @@
 # Copyright (c) 2013-2026 Corey Goldberg (https://github.com/cgoldberg)
 #  - License: GPLv2+
 
+"""Test suite for concurrencytest.
 
-"""Test suite for concurrencytest."""
+Don't try to discover tests from this file using `python -m unittest` or `pytest`
+because it imports other tests that it uses internally. Instead, use the `main()`
+entry-point function below that loads the proper test classes. You can just run
+this file directly and it will do that.
+"""
 
 import importlib
 import io
@@ -280,15 +285,37 @@ class SimpleTextTestResult(TextTestResult):
 
 
 def main():
+    """Run the core concurrency and partitioning tests for concurrencytest.
+
+    This function executes the following `TestCase` classes:
+
+    - `ForkingWorkersTest`:
+      - verifies that worker processes are correctly forked and tasks are distributed
+        and run as expected.
+    - `ForkForTestsTest`:
+      - verifies forking logic.
+    - `PartitionTest`:
+      - verifies individual tests are partitioned correctly in groups using default
+        round-robin strategy.
+    - `PartitionByClassTest`:
+      - validates tests are partitioned by class in groups where all tests in each
+        `TestCase` class are assigned to the same group.
+
+    Each test class is executed using a `TextTestRunner` with verbosity 2 and a
+    custom `SimpleTextTestResult`. The function returns the total number of test
+    errors and failures, for use as an exit code.
+    """
     runner = TextTestRunner(
         stream=sys.stdout, verbosity=2, resultclass=SimpleTextTestResult
     )
+    # Load only the selected test classes into the suite
     suite = TestSuite(
-        (
-            defaultTestLoader.loadTestsFromTestCase(ForkingWorkersTest),
-            defaultTestLoader.loadTestsFromTestCase(ForkForTestsTest),
-            defaultTestLoader.loadTestsFromTestCase(PartitionTest),
-            defaultTestLoader.loadTestsFromTestCase(PartitionByClassTest),
+        defaultTestLoader.loadTestsFromTestCase(cls)
+        for cls in (
+            ForkingWorkersTest,
+            ForkForTestsTest,
+            PartitionTest,
+            PartitionByClassTest,
         )
     )
     result = runner.run(suite)

@@ -78,16 +78,16 @@ class ExampleTestCase(unittest.TestCase):
 runner = unittest.TextTestRunner()
 
 # Run the tests from above sequentially
-suite = unittest.TestLoader().loadTestsFromTestCase(ExampleTestCase)
+suite = unittest.defaultTestLoader.loadTestsFromTestCase(ExampleTestCase)
 runner.run(suite)
 
 # Run same tests concurrently across 4 processes
-suite = unittest.TestLoader().loadTestsFromTestCase(ExampleTestCase)
+suite = unittest.defaultTestLoader.loadTestsFromTestCase(ExampleTestCase)
 concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(4))
 runner.run(concurrent_suite)
 
 # Run same tests concurrently using 1 process per available CPU core
-suite = unittest.TestLoader().loadTestsFromTestCase(ExampleTestCase)
+suite = unittest.defaultTestLoader.loadTestsFromTestCase(ExampleTestCase)
 concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests())
 runner.run(concurrent_suite)
 ```

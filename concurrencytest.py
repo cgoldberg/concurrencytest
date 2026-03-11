@@ -1,12 +1,13 @@
 # concurrencytest module
 #
-# Modified by: Corey Goldberg, 2013-2026
-#   License: GPLv2+
+# Copyright (c) 2013-2026 Corey Goldberg (https://github.com/cgoldberg)
+#  - License: GPLv2+
 #
 # Original code from:
-#   Bazaar (bzrlib.tests.__init__.py, v2.6, copied Jun 01 2013)
-#   Copyright (C) 2005-2011 Canonical Ltd
-#   License: GPLv2+
+#  - Bazaar (`bzrlib.tests.__init__.py`, v2.6, copied Jun 01 2013)
+#  - Copyright (c) 2005-2011 Canonical Ltd
+#  - License: GPLv2+
+
 
 """Python testtools extension for running unittest test suites concurrently.
 
@@ -80,6 +81,7 @@ def fork_for_tests(
     Returns:
         Callable function that takes a `TestSuite` and returns an iterable of
         test-like objects compatible with `ConcurrentTestSuite`.
+
     """
     if num_processes is None:
         num_processes = CPU_COUNT
@@ -97,6 +99,7 @@ def fork_for_tests(
         Returns:
             Iterable of TestCase-like objects which can each have `run(result)`
             called on them to feed tests to result.
+
         """
         result: list[ProtocolTestCase] = []
         test_blocks = partition_func(suite, num_processes)
@@ -161,6 +164,7 @@ def partition_tests(
         List of `count` lists, where each inner list contains the tests assigned to
         that partition. The tests maintain their original order, distributed
         round-robin.
+
     """
     partitions: list[list[unittest.TestCase]] = [[] for _ in range(count)]
     tests = iterate_tests(suite)
@@ -188,6 +192,7 @@ def partition_tests_by_class(
         List of `count` lists, where each inner list contains the tests assigned to
         that partition. Each class's tests are contained within a single partition,
         and partitions are balanced by total test count.
+
     """
     partitions: list[list[unittest.TestCase]] = [[] for _ in range(count)]
     loads: list[int] = [0] * count

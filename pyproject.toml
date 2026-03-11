@@ -76,10 +76,10 @@ target-version = "py310"
 [tool.ruff.lint]
 fixable = ["ALL"]
 select = [
-    "E", "F", "I", "N", "FURB", "RUF", "TID", "UP", "W"
+    "D", "E", "F", "I", "N", "FURB", "RUF", "TID", "UP", "W"
 ]
 extend-ignore = [
-    "N802",
+    "D101", "D102", "D103", "D203", "D213", "N802",
 ]
 
 [tool.ruff.format]

@@ -24,6 +24,8 @@ Unix-like systems only.
 __all__ = [
     "ConcurrentTestSuite",
     "fork_for_tests",
+    "partition_tests",
+    "partition_tests_by_class",
 ]
 
 
@@ -49,22 +51,48 @@ if not callable(getattr(os, "fork", None)):
 CPU_COUNT = cpu_count()
 
 
-def fork_for_tests(concurrency_num=CPU_COUNT):
-    """Implementation of `make_tests` used to construct `ConcurrentTestSuite`.
+def fork_for_tests(num_processes=None, partition_func=None):
+    """Create a test runner that executes tests in multiple forked processes.
 
-    :param concurrency_num: number of processes to use.
+    This function returns a callable suitable for use as the `make_tests`
+    argument to `testtools.ConcurrentTestSuite`. The returned callable
+    partitions a test suite into groups and executes each group in a
+    separate worker process using `os.fork()`.
+
+    Args:
+        num_processes:
+            The number of worker processes to spawn. Defaults to the
+            number of CPUs on the system.
+
+        partition_func:
+            Function used to partition tests across workers. It receives the
+            test suite and the worker count and must return a list of test
+            lists (one list per worker). If `None`, the default round-robin
+            partition strategy is used.
+
+    Returns:
+        Callable function that takes a `TestSuite` and returns an iterable of
+        test-like objects compatible with `ConcurrentTestSuite`.
     """
+    if num_processes is None:
+        num_processes = CPU_COUNT
+
+    if partition_func is None:
+        partition_func = partition_tests
 
     def do_fork(suite):
-        """Take suite and start up multiple runners by forking (Unix only).
+        """Take a test suite and start up multiple runners by forking.
 
-        :param suite: TestSuite object.
+        Args:
+            suite:
+                `TestSuite` object.
 
-        :return: An iterable of TestCase-like objects which can each have
-        run(result) called on them to feed tests to result.
+        Returns:
+            Iterable of TestCase-like objects which can each have `run(result)`
+            called on them to feed tests to result.
         """
         result = []
-        test_blocks = partition_tests(suite, concurrency_num)
+        test_blocks = partition_func(suite, num_processes)
         # Clear the tests from the original suite so it doesn't keep them alive
         suite._tests[:] = []
         for worker_id, process_tests in enumerate(test_blocks):
@@ -109,16 +137,58 @@ def fork_for_tests(concurrency_num=CPU_COUNT):
 
 
 def partition_tests(suite, count):
-    """Partition suite into count lists of tests.
+    """Partition a unittest suite into multiple lists of tests, using round-robin.
 
-    This just assigns tests in a round-robin fashion. On one hand this
-    splits up blocks of related tests that might run faster if they shared
-    resources, but on the other it avoids assigning blocks of slow tests to
-    just one partition. So the slowest partition shouldn't be much slower
-    than the fastest.
+    This function takes a unittest TestSuite and splits its individual test
+    cases into `count` separate lists. Tests are assigned in a round-robin
+    fashion to distribute load evenly across workers. This helps avoid
+    situations where one worker gets all slow tests while others finish quickly.
+
+    Args:
+        suite: `TestSuite` containing all test cases to partition.
+        count: Number of partitions.
+
+    Returns:
+        List of `count` lists, where each inner list contains the tests assigned to
+        that partition. The tests maintain their original order, distributed
+        round-robin.
     """
     partitions = [[] for _ in range(count)]
     tests = iterate_tests(suite)
     for partition, test in zip(cycle(partitions), tests):
         partition.append(test)
+    return partitions
+
+
+def partition_tests_by_class(suite, count):
+    """Partition a unittest suite into multiple lists of tests, keeping class locality.
+
+    This function groups all tests belonging to the same `TestCase` class and assigns
+    each class as a block to the worker with the current smallest load. This ensures
+    that all tests from a single class run in the same worker, which preserves
+    `setUpClass`/`tearDownClass` lifecycle semantics. It also attempts to balance the
+    number of tests across workers.
+
+    Args:
+        suite: `TestSuite` containing all test cases to partition.
+        count: Number of partitions.
+
+    Returns:
+        List of `count` lists, where each inner list contains the tests assigned to
+        that partition. Each class's tests are contained within a single partition,
+        and partitions are balanced by total test count.
+    """
+    partitions = [[] for _ in range(count)]
+    loads = [0] * count
+
+    tests_by_class = {}
+
+    for test in iterate_tests(suite):
+        tests_by_class.setdefault(type(test), []).append(test)
+
+    for tests in tests_by_class.values():
+        idx = min(range(count), key=lambda i: loads[i])
+        partitions[idx].extend(tests)
+        loads[idx] += len(tests)
+
     return partitions

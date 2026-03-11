@@ -32,6 +32,11 @@ jobs:
             tox
         env:
           TOXENV: lint
+      - name: Run type checking
+        run: |
+            tox
+        env:
+          TOXENV: type
       - name: Run tests
         run: |
           pip install .

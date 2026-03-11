@@ -33,8 +33,10 @@ import os
 import sys
 import traceback
 import unittest
+from collections.abc import Callable, Iterable
 from itertools import cycle
 from multiprocessing import cpu_count
+from typing import BinaryIO
 
 from subunit import ProtocolTestCase, TestProtocolClient
 from subunit.test_results import AutoTimingTestResultDecorator
@@ -51,7 +53,12 @@ if not callable(getattr(os, "fork", None)):
 CPU_COUNT = cpu_count()
 
 
-def fork_for_tests(num_processes=None, partition_func=None):
+def fork_for_tests(
+    num_processes: int | None = None,
+    partition_func: (
+        Callable[[unittest.TestSuite, int], list[list[unittest.TestCase]]] | None
+    ) = None,
+) -> Callable[[unittest.TestSuite], Iterable[ProtocolTestCase]]:
     """Create a test runner that executes tests in multiple forked processes.
 
     This function returns a callable suitable for use as the `make_tests`
@@ -80,7 +87,7 @@ def fork_for_tests(num_processes=None, partition_func=None):
     if partition_func is None:
         partition_func = partition_tests
 
-    def do_fork(suite):
+    def do_fork(suite: unittest.TestSuite) -> list[ProtocolTestCase]:
         """Take a test suite and start up multiple runners by forking.
 
         Args:
@@ -91,14 +98,14 @@ def fork_for_tests(num_processes=None, partition_func=None):
             Iterable of TestCase-like objects which can each have `run(result)`
             called on them to feed tests to result.
         """
-        result = []
+        result: list[ProtocolTestCase] = []
         test_blocks = partition_func(suite, num_processes)
         # Clear the tests from the original suite so it doesn't keep them alive
-        suite._tests[:] = []
+        suite._tests.clear()
         for worker_id, process_tests in enumerate(test_blocks):
             process_suite = unittest.TestSuite(process_tests)
             # Also clear each split list so new suite has only reference
-            process_tests[:] = []
+            process_tests.clear()
             c2pread, c2pwrite = os.pipe()
             pid = os.fork()
             if pid == 0:
@@ -122,21 +129,23 @@ def fork_for_tests(num_processes=None, partition_func=None):
                     # written in one go to avoid interleaving lines from
                     # multiple failing children.
                     try:
-                        stream.write(traceback.format_exc())
+                        stream.write(traceback.format_exc().encode())
                     finally:
                         os._exit(1)
                 os._exit(0)
             else:
                 os.close(c2pwrite)
-                stream = os.fdopen(c2pread, "rb")
-                test = ProtocolTestCase(stream)
+                parent_stream: BinaryIO = os.fdopen(c2pread, "rb")
+                test = ProtocolTestCase(parent_stream)
                 result.append(test)
         return result
 
     return do_fork
 
 
-def partition_tests(suite, count):
+def partition_tests(
+    suite: unittest.TestSuite, count: int
+) -> list[list[unittest.TestCase]]:
     """Partition a unittest suite into multiple lists of tests, using round-robin.
 
     This function takes a unittest TestSuite and splits its individual test
@@ -153,14 +162,16 @@ def partition_tests(suite, count):
         that partition. The tests maintain their original order, distributed
         round-robin.
     """
-    partitions = [[] for _ in range(count)]
+    partitions: list[list[unittest.TestCase]] = [[] for _ in range(count)]
     tests = iterate_tests(suite)
     for partition, test in zip(cycle(partitions), tests):
         partition.append(test)
     return partitions
 
 
-def partition_tests_by_class(suite, count):
+def partition_tests_by_class(
+    suite: unittest.TestSuite, count: int
+) -> list[list[unittest.TestCase]]:
     """Partition a unittest suite into multiple lists of tests, keeping class locality.
 
     This function groups all tests belonging to the same `TestCase` class and assigns
@@ -178,10 +189,10 @@ def partition_tests_by_class(suite, count):
         that partition. Each class's tests are contained within a single partition,
         and partitions are balanced by total test count.
     """
-    partitions = [[] for _ in range(count)]
-    loads = [0] * count
+    partitions: list[list[unittest.TestCase]] = [[] for _ in range(count)]
+    loads: list[int] = [0] * count
 
-    tests_by_class = {}
+    tests_by_class: dict[type, list[unittest.TestCase]] = {}
 
     for test in iterate_tests(suite):
         tests_by_class.setdefault(type(test), []).append(test)

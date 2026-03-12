@@ -11,24 +11,27 @@ concurrencytest
 - Download/Install: [PyPI](https://pypi.org/project/concurrencytest)
 - License: [GPLv2+](https://raw.githubusercontent.com/cgoldberg/concurrencytest/refs/heads/master/LICENSE)
 - Copyright (c) 2013-2026 [Corey Goldberg](https://github.com/cgoldberg)
-- Original code from:
-  - Bazaar (`bzrlib.tests.__init__.py`, v2.6, copied Jun 01 2013)
-  - Copyright (c) 2005-2011 Canonical Ltd
 
 ----
 
 ## About
 
 `concurrencytest` allows you to parallelize a `unittest` tests across a
-configurable number of worker processes.
+configurable number of worker processes. You can specify a partition strategy
+and the number of worker processes to use. By default, tests are distributed
+to worker processes in a round-robin fashion using 1 process per available CPU
+core.
 
-This module provides the `ConcurrentTestSuite` class from `testtools` and the
-`fork_for_tests` function (`make_tests` implementation needed to use
-`ConcurrentTestSuite`).
+This module provides:
 
-You can specify a partition strategy and the number of worker processes to use.
-By default, tests are distributed to worker processes in a round-robin fashion
-using 1 process per available CPU core.
+- `ConcurrentTestSuite` class: unittest-compatible `TestSuite` for running
+  parallel tests.
+- `fork_for_tests` function: fork-based `make_tests` implementation for use
+  with `ConcurrentTestSuite`.
+- `partition_tests` function: round-robin partition strategy for test
+  distribution to worker processes.
+- `partition_tests_by_class`: class-local partition strategy for test
+  distribution to worker processes.
 
 For more info about writing/running tests with the `unittest` testing
 framework, see the
@@ -60,22 +63,21 @@ pip install concurrencytest
 This module provides a `ConcurrentTestSuite` class that is used in place of the
 `unittest.TestSuite` class from the standard library.
 
-To use it, you would:
+To use it:
 
-1. write your tests in normal `unittest` style
-   (test methods inside a `unittest.TestCase` class)
-2. load a suite of tests using `unittest.TestLoader`
-   (or `unittest.defaultTestLoader`)
+1. write your tests in normal `unittest` style (test methods inside a
+   `unittest.TestCase` class)
+2. load a suite of tests using `unittest.TestLoader` (or `unittest.defaultTestLoader`):
   - `suite = unittest.TestLoader().discover("tests")`
   - `suite = unittest.TestLoader().loadTestsFromModule(my_tests)`
   - `suite = unittest.TestLoader().loadTestsFromTestCase(MyTests)`
   - `suite = unittest.TestLoader().loadTestsFromName("MyTests.test_1")`
   - `suite = unittest.TestLoader().loadTestsFromNames("MyTests.test_1", "MyTests.test_2")`
-3. Create a `ConcurrentTestSuite` with your test suite and (optionally) a
+3. Instantiate a `ConcurrentTestSuite` with your test suite and (optionally) a
    `make_tests` implementation (partition strategy):
   - `concurrent_suite = ConcurrentTestSuite(suite)`
   - `concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(4))`
-4. Run your test suite using a unittest-style runner:
+4. Run your test suite using a unittest-compatible runner:
   - `unittest.TextTestRunner().run(concurrent_suite)`
 
 Specifying number of processes and partition strategy:

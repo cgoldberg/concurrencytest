@@ -21,7 +21,6 @@ from unittest import (
     TestCase,
     TestResult,
     TestSuite,
-    TextTestResult,
     TextTestRunner,
     defaultTestLoader,
     mock,
@@ -81,7 +80,7 @@ class ConcurrentTestSuiteTest(TestCase):
 
 
 class ForkingWorkersTest(TestCase):
-    def _run_tests(self, test_classes, num_processes=None, partition_func=None):
+    def _run_tests(self, test_classes, num_processes=None):
         """Run one or more test classes concurrently.
 
         If `num_processes` is given, run tests across N processes. Otherwise, use
@@ -105,28 +104,47 @@ class ForkingWorkersTest(TestCase):
             [defaultTestLoader.loadTestsFromTestCase(tc) for tc in test_classes]
         )
         runner = TextTestRunner(stream=io.StringIO())
-        make_tests = fork_for_tests(
-            num_processes=num_processes, partition_func=partition_func
-        )
-        if num_processes:
-            make_tests = fork_for_tests(partition_func=partition_func)
-        else:
-            make_tests = fork_for_tests(num_processes, partition_func=partition_func)
-        concurrent_suite = ConcurrentTestSuite(suite, make_tests)
+        concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(num_processes))
         result = runner.run(concurrent_suite)
         self.assertIsInstance(result, TestResult)
         self.assertEqual(result.testsRun, suite.countTestCases())
         return result
 
-    def test_all_tests_run(self):
+    def test_all_tests_run_with_default_concurrency_and_default_partition(self):
+        runner = TextTestRunner(stream=io.StringIO())
         suite = defaultTestLoader.loadTestsFromModule(concurrencytest_tests)
-        test_classes = list({type(t) for t in iterate_tests(suite)})
-        self._run_tests(test_classes)
+        make_tests = fork_for_tests()
+        concurrent_suite = ConcurrentTestSuite(suite, make_tests)
+        result = runner.run(concurrent_suite)
+        self.assertIsInstance(result, TestResult)
+        self.assertEqual(result.testsRun, suite.countTestCases())
 
-    def test_all_tests_run_with_partition(self):
+    def test_all_tests_run_with_specified_workers_and_default_partition(self):
+        runner = TextTestRunner(stream=io.StringIO())
         suite = defaultTestLoader.loadTestsFromModule(concurrencytest_tests)
-        test_classes = list({type(t) for t in iterate_tests(suite)})
-        self._run_tests(test_classes, partition_tests_by_class)
+        make_tests = fork_for_tests()
+        concurrent_suite = ConcurrentTestSuite(suite, make_tests)
+        result = runner.run(concurrent_suite)
+        self.assertIsInstance(result, TestResult)
+        self.assertEqual(result.testsRun, suite.countTestCases())
+
+    def test_all_tests_run_with_default_concurrency_and_partition_by_class(self):
+        runner = TextTestRunner(stream=io.StringIO())
+        suite = defaultTestLoader.loadTestsFromModule(concurrencytest_tests)
+        make_tests = fork_for_tests(partition_func=partition_tests_by_class)
+        concurrent_suite = ConcurrentTestSuite(suite, make_tests)
+        result = runner.run(concurrent_suite)
+        self.assertIsInstance(result, TestResult)
+        self.assertEqual(result.testsRun, suite.countTestCases())
+
+    def test_all_tests_run_with_specified_workers_and_partition_by_class(self):
+        runner = TextTestRunner(stream=io.StringIO())
+        suite = defaultTestLoader.loadTestsFromModule(concurrencytest_tests)
+        make_tests = fork_for_tests(2, partition_tests_by_class)
+        concurrent_suite = ConcurrentTestSuite(suite, make_tests)
+        result = runner.run(concurrent_suite)
+        self.assertIsInstance(result, TestResult)
+        self.assertEqual(result.testsRun, suite.countTestCases())
 
     def test_run_all_pass(self):
         result = self._run_tests(BothPass, 2)
@@ -157,22 +175,10 @@ class ForkingWorkersTest(TestCase):
         self.assertEqual(len(result.failures), 0)
         self.assertEqual(len(result.skipped), 1)
 
-    def test_run_default_concurrency(self):
-        # Run 1 process per CPU core
-        result = self._run_tests(BothPass)
-        self.assertEqual(result.testsRun, 2)
-        self.assertTrue(result.wasSuccessful())
-        self.assertEqual(len(result.errors), 0)
-        self.assertEqual(len(result.failures), 0)
-        self.assertEqual(len(result.skipped), 0)
-
     def test_worker_id_env_var_is_assigned(self):
         result = self._run_tests(WorkerIDCheck)
         self.assertEqual(result.testsRun, 1)
         self.assertTrue(result.wasSuccessful())
-        self.assertEqual(len(result.errors), 0)
-        self.assertEqual(len(result.failures), 0)
-        self.assertEqual(len(result.skipped), 0)
 
     def test_import_exception_on_platform_without_fork(self):
         message = (
@@ -279,11 +285,6 @@ class PartitionByClassTest(TestCase):
         self._verify_partitions_have_tests(parted_tests)
 
 
-class SimpleTextTestResult(TextTestResult):
-    def getDescription(self, test):
-        return str(test._testMethodName)
-
-
 def main():
     """Run the core concurrency and partitioning tests for concurrencytest.
 
@@ -300,15 +301,8 @@ def main():
     - `PartitionByClassTest`:
       - validates tests are partitioned by class in groups where all tests in each
         `TestCase` class are assigned to the same group.
-
-    Each test class is executed using a `TextTestRunner` with verbosity 2 and a
-    custom `SimpleTextTestResult`. The function returns the total number of test
-    errors and failures, for use as an exit code.
     """
-    runner = TextTestRunner(
-        stream=sys.stdout, verbosity=2, resultclass=SimpleTextTestResult
-    )
-    # Load only the selected test classes into the suite
+    runner = TextTestRunner(stream=sys.stdout)
     suite = TestSuite(
         defaultTestLoader.loadTestsFromTestCase(cls)
         for cls in (

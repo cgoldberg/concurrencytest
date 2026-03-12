@@ -3,7 +3,7 @@
 # Copyright (c) 2013-2026 Corey Goldberg (https://github.com/cgoldberg)
 #  - License: GPLv2+
 #
-# Original code from:
+# Original code adapted from:
 #  - Bazaar (`bzrlib.tests.__init__.py`, v2.6, copied Jun 01 2013)
 #  - Copyright (c) 2005-2011 Canonical Ltd
 #  - License: GPLv2+
@@ -11,13 +11,11 @@
 
 """Run unittest test suites concurrently.
 
-The `testtools` project provides a `ConcurrentTestSuite` class, but does
-not provide a `make_tests` implementation needed to use it.
-
-This allows you to parallelize a test run across a configurable number
-of worker processes. While this can speed up CPU-bound test runs, it is
-mainly useful for IO-bound tests that spend most of their time waiting for
-data to arrive from someplace else and can benefit from cocncurrency.
+This module provides extensions that are compatible with Python's built-in
+`unittest` that allows you to parallelize a test run across a configurable number
+of worker processes. This can speed up CPU-bound test runs, and is useful for IO-bound
+tests that spend most of their time waiting for data to arrive from someplace else and
+can benefit from cocncurrency.
 
 Unix-like systems only.
 """
@@ -28,7 +26,6 @@ __all__ = [
     "partition_tests",
     "partition_tests_by_class",
 ]
-
 
 import os
 import sys

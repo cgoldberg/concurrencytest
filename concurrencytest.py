@@ -110,7 +110,7 @@ def fork_for_tests(
             process_tests.clear()
             c2pread, c2pwrite = os.pipe()
             pid = os.fork()
-            if pid == 0:
+            if pid == 0:  # Child process
                 os.environ["TEST_WORKER_ID"] = str(worker_id)
                 try:
                     stream = os.fdopen(c2pwrite, "wb")
@@ -135,7 +135,7 @@ def fork_for_tests(
                     finally:
                         os._exit(1)
                 os._exit(0)
-            else:
+            else:  # Parent process
                 os.close(c2pwrite)
                 parent_stream: BinaryIO = os.fdopen(c2pread, "rb")
                 test = ProtocolTestCase(parent_stream)

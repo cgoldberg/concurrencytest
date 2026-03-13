@@ -27,6 +27,7 @@ __all__ = [
     "partition_tests_by_class",
 ]
 
+import atexit
 import os
 import sys
 import traceback
@@ -138,6 +139,7 @@ def fork_for_tests(
             else:  # Parent process
                 os.close(c2pwrite)
                 parent_stream: BinaryIO = os.fdopen(c2pread, "rb")
+                atexit.register(parent_stream.close)
                 test = ProtocolTestCase(parent_stream)
                 result.append(test)
         return result

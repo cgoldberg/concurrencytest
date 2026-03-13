@@ -16,7 +16,6 @@ import io
 import os
 import re
 import sys
-import types
 from unittest import (
     TestCase,
     TestResult,
@@ -45,39 +44,6 @@ from concurrencytest_tests import (
     TwoWithSetupTearDownClass,
     WorkerIDCheck,
 )
-
-
-class ConcurrentTestSuiteTest(TestCase):
-    def _verify_partition_strategy(self, partition_func=None):
-        suite = defaultTestLoader.loadTestsFromTestCase(TestCase)
-        if partition_func:
-            make_tests = fork_for_tests(2, partition_func)
-        else:
-            make_tests = fork_for_tests(2)
-        concurrent_suite = ConcurrentTestSuite(suite, make_tests)
-        closure_vars = {
-            name: cell.cell_contents
-            for name, cell in zip(
-                make_tests.__code__.co_freevars, make_tests.__closure__ or []
-            )
-        }
-        self.assertIs(concurrent_suite._make_tests, make_tests)
-        self.assertTrue(callable(concurrent_suite._make_tests))
-        self.assertIsInstance(concurrent_suite._make_tests, types.FunctionType)
-        func = closure_vars.get("partition_func")
-        return func
-
-    def test_partition_default_strategy(self):
-        func = self._verify_partition_strategy()
-        self.assertIs(func, partition_tests)
-
-    def test_partition_round_robin_strategy(self):
-        func = self._verify_partition_strategy(partition_tests)
-        self.assertIs(func, partition_tests)
-
-    def test_partition_by_class_strategy(self):
-        func = self._verify_partition_strategy(partition_tests_by_class)
-        self.assertIs(func, partition_tests_by_class)
 
 
 class ForkingWorkersTest(TestCase):

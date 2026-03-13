@@ -5,7 +5,7 @@ concurrencytest
 
 ## Python - Run unittest test suites concurrently
 
-[![PyPI Version](https://img.shields.io/pypi/pyversions/concurrencytest)](https://pypi.org/project/concurrencytest)
+[![PyPI Version](https://img.shields.io/pypi/v/concurrencytest.svg)](https://pypi.org/project/concurrencytest)
 [![Python Versions](https://img.shields.io/pypi/pyversions/concurrencytest.svg)](https://pypi.org/project/concurrencytest)
 [![Build Status](https://github.com/cgoldberg/concurrencytest/actions/workflows/test.yml/badge.svg)](https://github.com/cgoldberg/concurrencytest/actions)
 

@@ -14,8 +14,8 @@ concurrencytest
 
 | Type | Status |
 | ---- | ------ |
-| Latest Version | [![Latest Version](https://img.shields.io/pypi/v/concurrencytest.svg)](https://pypi.org/project/concurrencytest)
-| Supported Python Versions | [![Supported Python Versions](https://img.shields.io/pypi/pyversions/concurrencytest.svg)](https://pypi.org/project/concurrencytest)
+| Latest Version | [![Latest Version](https://img.shields.io/pypi/v/concurrencytest.svg)](https://pypi.org/project/concurrencytest) |
+| Supported Python Versions | [![Supported Python Versions](https://img.shields.io/pypi/pyversions/concurrencytest.svg)](https://pypi.org/project/concurrencytest) |
 | Build/Tests (CI) | [![Build/Tests (GitHub)](https://github.com/cgoldberg/concurrencytest/actions/workflows/test.yml/badge.svg)](https://github.com/cgoldberg/concurrencytest/actions) |
 
 ----

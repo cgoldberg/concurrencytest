@@ -21,6 +21,7 @@ from unittest import (
     TestCase,
     TestResult,
     TestSuite,
+    TextTestResult,
     TextTestRunner,
     defaultTestLoader,
     mock,
@@ -302,7 +303,14 @@ def main():
       - validates tests are partitioned by class in groups where all tests in each
         `TestCase` class are assigned to the same group.
     """
-    runner = TextTestRunner(stream=sys.stdout)
+
+    class SimpleTextTestResult(TextTestResult):
+        def getDescription(self, test):
+            return str(test._testMethodName)
+
+    runner = TextTestRunner(
+        stream=sys.stdout, verbosity=2, resultclass=SimpleTextTestResult
+    )
     suite = TestSuite(
         defaultTestLoader.loadTestsFromTestCase(cls)
         for cls in (

@@ -5,16 +5,18 @@ concurrencytest
 
 ## Python - Run unittest test suites concurrently
 
-[![PyPI Version](https://img.shields.io/pypi/v/concurrencytest.svg)](https://pypi.org/project/concurrencytest)
-[![Python Versions](https://img.shields.io/pypi/pyversions/concurrencytest.svg)](https://pypi.org/project/concurrencytest)
-[![Build Status](https://github.com/cgoldberg/concurrencytest/actions/workflows/test.yml/badge.svg)](https://github.com/cgoldberg/concurrencytest/actions)
-
-----
-
 - Development: [GitHub](https://github.com/cgoldberg/concurrencytest)
 - Download/Install: [PyPI](https://pypi.org/project/concurrencytest)
 - License: [GPLv2+](https://raw.githubusercontent.com/cgoldberg/concurrencytest/refs/heads/master/LICENSE)
 - Copyright (c) 2013-2026 [Corey Goldberg](https://github.com/cgoldberg)
+
+----
+
+| Type | Status |
+| ---- | ------ |
+| Latest Version | [![Latest Version](https://img.shields.io/pypi/v/concurrencytest.svg)](https://pypi.org/project/concurrencytest)
+| Supported Python Versions | [![Supported Python Versions](https://img.shields.io/pypi/pyversions/concurrencytest.svg)](https://pypi.org/project/concurrencytest)
+| Build/Tests (CI) | [![Build/Tests (GitHub)](https://github.com/cgoldberg/concurrencytest/actions/workflows/test.yml/badge.svg)](https://github.com/cgoldberg/concurrencytest/actions) |
 
 ----
 
@@ -59,7 +61,7 @@ pip install concurrencytest
 
 ## Usage
 
-#### Basic steps
+#### Basic steps:
 
 1. write your tests in normal `unittest` style (test methods inside a
    `unittest.TestCase` class)
@@ -141,7 +143,7 @@ Examples of creating a `ConcurrentTestSuite`:
 ## Examples
 
 
-#### Basic example
+#### Basic example:
 
 ```python
 import time
@@ -202,7 +204,7 @@ Ran 4 tests in 1.009s
 OK
 ```
 
-#### Advanced example
+#### Advanced example:
 
 ```python
 import time
@@ -282,7 +284,6 @@ runner.run(concurrent_suite)
 Output:
 
 ```
-
 running sequential (without concurrencytest):
 ....
 ----------------------------------------------------------------------

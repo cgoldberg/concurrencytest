@@ -14,6 +14,7 @@ this file directly and it will do that.
 import importlib
 import io
 import os
+import platform
 import re
 import sys
 from unittest import (
@@ -291,4 +292,8 @@ def main():
 
 
 if __name__ == "__main__":
+    version = platform.python_version()
+    implementation = platform.python_implementation()
+    print(f"\nRunning tests with Python {version} ({implementation})\n")
+    print(f"{'-' * 70}\n")
     sys.exit(main())

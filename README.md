@@ -66,16 +66,16 @@ pip install concurrencytest
 1. write your tests in normal `unittest` style (test methods inside a
    `unittest.TestCase` class)
 2. load a suite of tests using `unittest.TestLoader` (or `unittest.defaultTestLoader`):
-  - `suite = unittest.TestLoader().discover("tests")`
-  - `suite = unittest.TestLoader().loadTestsFromModule(my_tests)`
-  - `suite = unittest.TestLoader().loadTestsFromTestCase(MyTests)`
-  - `suite = unittest.TestLoader().loadTestsFromName("MyTests.test_1")`
-  - `suite = unittest.TestLoader().loadTestsFromNames("MyTests.test_1", "MyTests.test_2")`
+    - `suite = unittest.TestLoader().discover("tests")`
+    - `suite = unittest.TestLoader().loadTestsFromModule(my_tests)`
+    - `suite = unittest.TestLoader().loadTestsFromTestCase(MyTests)`
+    - `suite = unittest.TestLoader().loadTestsFromName("MyTests.test_1")`
+    - `suite = unittest.TestLoader().loadTestsFromNames("MyTests.test_1", "MyTests.test_2")`
 3. Wrap with `ConcurrentTestSuite`:
-  - `concurrent_suite = ConcurrentTestSuite(suite)`
-  - `concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(4))`
+    - `concurrent_suite = ConcurrentTestSuite(suite)`
+    - `concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(4))`
 4. Run the suite using a unittest-compatible runner:
-  - `unittest.TextTestRunner().run(concurrent_suite)`
+    - `unittest.TextTestRunner().run(concurrent_suite)`
 
 
 #### Configuring number of processes and partition strategy:
@@ -95,9 +95,9 @@ fork_for_tests(num_processes, partition_func)
 ```
 
 - `num_processes` (optional): Number of worker processes to spawn
-  - Defaults to the number of CPUs on the system.
+    - Defaults to the number of CPUs on the system.
 - `partition_func` (optional): Function used to partition tests across workers.
-  - Defaults to `partition_tests` (round-robin partition strategy).
+    - Defaults to `partition_tests`.
 
 Available partition functions:
 
@@ -151,7 +151,7 @@ import unittest
 
 from concurrencytest import ConcurrentTestSuite
 
-"""Tests just sleep for demo."""
+"""Tests sleep for demo."""
 
 
 class ExampleTestCase(unittest.TestCase):
@@ -216,7 +216,7 @@ from concurrencytest import (
     partition_tests_by_class,
 )
 
-"""Tests just sleep for demo."""
+"""Tests sleep for demo."""
 
 
 class ExampleTestCase1(unittest.TestCase):

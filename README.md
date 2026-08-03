@@ -155,7 +155,6 @@ from concurrencytest import ConcurrentTestSuite
 
 
 class ExampleTestCase(unittest.TestCase):
-
     def test_1(self):
         time.sleep(1)
 
@@ -220,7 +219,6 @@ from concurrencytest import (
 
 
 class ExampleTestCase1(unittest.TestCase):
-
     def test_1(self):
         time.sleep(1)
 

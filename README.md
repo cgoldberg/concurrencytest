@@ -313,6 +313,5 @@ OK
 
 ## Notes
 
-For more info about writing/running tests with the `unittest` testing
-framework, see the
-[official documentation](https://docs.python.org/library/unittest.html).
+For more info about writing/running tests with the `unittest` testing framework,
+see the [official documentation](https://docs.python.org/library/unittest.html).

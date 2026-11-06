@@ -25,12 +25,13 @@ classifiers = [
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: 3.14",
+        "Programming Language :: Python :: 3.15",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Software Development :: Testing",
 ]
 dependencies = [
-    "python-subunit",
-    "testtools",
+    "python-subunit>=1.4.6",
+    "testtools>=2.9.1",
 ]
 
 [project.urls]
@@ -39,21 +40,14 @@ source = "https://github.com/cgoldberg/concurrencytest"
 download = "https://pypi.org/project/concurrencytest"
 
 [dependency-groups]
-dev = [
-    "tox",
-]
 lint = [
-    "black",
-    "refurb",
-    "ruff",
+    "ruff==0.17.4",
 ]
 type = [
-    "mypy",
+    "mypy==2.4.1",
 ]
 validate = [
-    "packaging",
-    "tomli",
-    "validate-pyproject",
+    "validate-pyproject[all]==0.27",
 ]
 
 [tool.setuptools]
@@ -62,30 +56,23 @@ py-modules = ["concurrencytest"]
 [tool.mypy]
 ignore_missing_imports = true
 
-[tool.black]
-line-length = 88
-target-version = [
-    "py310", "py311", "py312", "py313", "py314"
-]
-
 [tool.ruff]
 line-length = 88
 respect-gitignore = true
 target-version = "py310"
 
 [tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ANN", "BLE001", "COM812", "D",
+    "N802", "PT", "SLF", "T201"
+]
 fixable = ["ALL"]
-select = [
-    "D", "E", "F", "I", "N", "FURB", "RUF", "TID", "UP", "W"
-]
-extend-ignore = [
-    "D101", "D102", "D103", "D107", "D203", "D213", "N802",
-]
+
+[tool.ruff.lint.per-file-ignores]
+"**/test_*.py" = ["PLR2004", "PT", "SIM117"]
+"**/*_tests.py" = ["EM101", "FBT003", "TRY002"]
 
 [tool.ruff.format]
 docstring-code-format = true
 docstring-code-line-length = 88
-
-[tool.refurb]
-python_version = "3.10"
-enable_all = true

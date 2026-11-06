@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-#
-# Copyright (c) 2013-2026 Corey Goldberg (https://github.com/cgoldberg)
-#  - License: GPLv2+
+
+# Copyright (c) 2013-2026 Corey Goldberg
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 
 """Test suite for concurrencytest.
 
@@ -69,7 +70,7 @@ class ForkingWorkersTest(TestCase):
         if isinstance(test_classes, type) and issubclass(test_classes, TestCase):
             test_classes = (test_classes,)
         suite = TestSuite(
-            [defaultTestLoader.loadTestsFromTestCase(tc) for tc in test_classes]
+            [defaultTestLoader.loadTestsFromTestCase(tc) for tc in test_classes],
         )
         runner = TextTestRunner(stream=io.StringIO())
         concurrent_suite = ConcurrentTestSuite(suite, fork_for_tests(num_processes))
@@ -187,12 +188,12 @@ class PartitionTest(TestCase):
                 defaultTestLoader.loadTestsFromTestCase(OneError),
                 defaultTestLoader.loadTestsFromTestCase(OneFail),
                 defaultTestLoader.loadTestsFromTestCase(OneSkip),
-            ]
+            ],
         )
 
     def _verify_partitions_have_tests(self, partitions):
         self.assertTrue(
-            all(isinstance(t, TestCase) for part in partitions for t in part)
+            all(isinstance(t, TestCase) for part in partitions for t in part),
         )
 
     def test_num_tests(self):
@@ -224,12 +225,12 @@ class PartitionByClassTest(TestCase):
             [
                 defaultTestLoader.loadTestsFromTestCase(OneWithSetupTearDownClass),
                 defaultTestLoader.loadTestsFromTestCase(TwoWithSetupTearDownClass),
-            ]
+            ],
         )
 
     def _verify_partitions_have_tests(self, partitions):
         self.assertTrue(
-            all(isinstance(t, TestCase) for part in partitions for t in part)
+            all(isinstance(t, TestCase) for part in partitions for t in part),
         )
 
     def test_num_tests(self):
@@ -276,7 +277,9 @@ def main():
             return str(test._testMethodName)
 
     runner = TextTestRunner(
-        stream=sys.stdout, verbosity=2, resultclass=SimpleTextTestResult
+        stream=sys.stdout,
+        verbosity=2,
+        resultclass=SimpleTextTestResult,
     )
     suite = TestSuite(
         defaultTestLoader.loadTestsFromTestCase(cls)

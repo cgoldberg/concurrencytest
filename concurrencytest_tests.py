@@ -1,3 +1,7 @@
+# Copyright (c) 2013-2026 Corey Goldberg
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+
 """Tests used internally by `test_concurrencytest.py`.
 
 Not to be run on their own.

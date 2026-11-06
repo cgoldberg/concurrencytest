@@ -1,7 +1,5 @@
-# concurrencytest module
-#
-# Copyright (c) 2013-2026 Corey Goldberg (https://github.com/cgoldberg)
-#  - License: GPLv2+
+# Copyright (c) 2013-2026 Corey Goldberg
+# SPDX-License-Identifier: GPL-2.0-or-later
 #
 # Original code adapted from:
 #  - Bazaar (`bzrlib.tests.__init__.py`, v2.6, copied Jun 01 2013)
@@ -122,7 +120,7 @@ def fork_for_tests(
                     # child actually gets keystrokes for pdb etc).
                     sys.stdin.close()
                     subunit_result = AutoTimingTestResultDecorator(
-                        TestProtocolClient(stream)
+                        TestProtocolClient(stream),
                     )
                     process_suite.run(subunit_result)
                 except Exception:
@@ -148,7 +146,8 @@ def fork_for_tests(
 
 
 def partition_tests(
-    suite: unittest.TestSuite, count: int
+    suite: unittest.TestSuite,
+    count: int,
 ) -> list[list[unittest.TestCase]]:
     """Partition a unittest suite into multiple lists of tests, using round-robin.
 
@@ -177,7 +176,8 @@ def partition_tests(
 
 
 def partition_tests_by_class(
-    suite: unittest.TestSuite, count: int
+    suite: unittest.TestSuite,
+    count: int,
 ) -> list[list[unittest.TestCase]]:
     """Partition a unittest suite into multiple lists of tests, keeping class locality.
 
